@@ -31,15 +31,16 @@ dialog.on('AddReminder', [
         forWho.entity = session.userData.identity.mention_name
       }
       if (forWho.entity.indexOf('@ ') == 0) forWho.entity = `@${forWho.entity.slice(2)}`
-      match = builder.EntityRecognizer.findBestMatch(_.values(bot.directory).map((user) => user.mention_name), forWho.entity)
-        || builder.EntityRecognizer.findBestMatch(_.values(bot.directory).map((user) => user.name), forWho.entity)
+      let users = _.values(bot.directory)
+      match = builder.EntityRecognizer.findBestMatch(users.map((user) => user.mention_name), forWho.entity)
+        || builder.EntityRecognizer.findBestMatch(users.map((user) => user.name), forWho.entity)
       if (!match) {
         session.send(`Sorry, I can't find ${forWho.entity}`).endDialog()
       } else {
         session.sessionState.reminder = {
           fromLUIS: args,
-          who: `@${match.entity}`,
-          what: builder.EntityRecognizer.findAllEntities(args.entities, 'activity')
+          who: users[match.index],
+          what: builder.EntityRecognizer.findAllEntities(args.entities, 'activity').map((w) => w.entity).join(' ')
         }
         if (Object.is(forWho.entity.toLowerCase(), match.entity.toLowerCase())) {
           next({response: true})
@@ -84,8 +85,8 @@ dialog.on('AddReminder', [
   ,
   // echo is the new confirm
   (session) => {
-    let who = session.sessionState.reminder.who
-    let what = session.sessionState.reminder.what.map((w) => w.entity).join(' ')
+    let who = `@${session.sessionState.reminder.who.mention_name}`
+    let what = session.sessionState.reminder.what
     let when = session.sessionState.reminder.when
     console.error(`Got it. I'll remind ${who}, ${moment(when).calendar()} to ${what}`)
     session.send(`Got it. I'll remind ${who}, ${moment(when).calendar()} to ${what}`)
