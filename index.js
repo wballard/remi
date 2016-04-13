@@ -57,6 +57,7 @@ dialog.on('AddReminder', [
   (session, response, next) => {
     if (response.response) {
       session.send('Fantastic')
+      bot.fullProfile(session.sessionState.reminder.who.jid)
       next()
     } else {
       session.send('Sorry about that, try again for me.').endDialog()
