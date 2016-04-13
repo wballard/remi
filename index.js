@@ -21,25 +21,17 @@ let dialog = new builder.LuisDialog(process.env.LUIS_MODEL)
 bot.add('/', dialog)
 
 dialog.on('AddReminder', [
-  // can we tell anything?
-  (session, args, next) => {
-    console.error(JSON.stringify(args, null, ' '))
-    if (args.entities.length == 0 || !builder.EntityRecognizer.findEntity(args.entities, 'activity'))
-      session.send(INSTRUCTIONS)
-    else
-      next(args)
-  }
-  ,
   // make sure this is really for somebody
   (session, args, next) => {
     let forWho = builder.EntityRecognizer.findEntity(args.entities, 'user')
     let match = undefined
     if (forWho) {
-      if (Object.is(forWho.entity.toLowerCase, 'me') || Object.is(forWho.entity.toLowerCase, 'myself')) {
+      if (Object.is(forWho.entity.toLowerCase(), 'me') || Object.is(forWho.entity.toLowerCase(), 'myself')) {
         forWho.entity = session.userData.identity.mention_name
       }
       if (forWho.entity.indexOf('@ ') == 0) forWho.entity = `@${forWho.entity.slice(2)}`
       match = builder.EntityRecognizer.findBestMatch(_.values(bot.directory).map((user) => user.mention_name), forWho.entity)
+        || builder.EntityRecognizer.findBestMatch(_.values(bot.directory).map((user) => user.name), forWho.entity)
       if (!match) {
         session.send(`Sorry, I can't find ${forWho.entity}`).endDialog()
       } else {
