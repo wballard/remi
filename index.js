@@ -75,10 +75,12 @@ dialog.on('AddReminder', [
   ,
   // make sure we know when
   (session, response, next) => {
-    let when = builder.EntityRecognizer.findEntity(session.sessionState.reminder.fromLUIS.entities, 'builtin.datetime.date')
+    let when = builder.EntityRecognizer.findEntity(session.sessionState.reminder.fromLUIS.entities, 'builtin.datetime.time') ||
+      builder.EntityRecognizer.findEntity(session.sessionState.reminder.fromLUIS.entities, 'builtin.datetime.date') ||
+      builder.EntityRecognizer.findEntity(session.sessionState.reminder.fromLUIS.entities, 'builtin.datetime.datetime')
     if (when) {
-      session.sessionState.reminder.when = when
-      next({response: when})
+      session.sessionState.reminder.when = builder.EntityRecognizer.recognizeTime(when.entity)
+      next({response: session.sessionState.reminder.when})
     } else {
       builder.Prompts.time(session, 'When?')
     }
@@ -98,6 +100,7 @@ dialog.on('AddReminder', [
     let who = `@${session.sessionState.reminder.who.mention_name}`
     let what = session.sessionState.reminder.what
     let when = moment(session.sessionState.reminder.when)
+    console.error(session.sessionState.reminder.when)
     // convert from this time zone away from the local system difference with the requesting user
     let offsetMinutes = when.utcOffset() - (session.userData.identity.timezone)
     when.add(offsetMinutes, 'm')

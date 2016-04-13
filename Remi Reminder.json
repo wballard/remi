@@ -15,6 +15,12 @@
   ],
   "entities": [
     {
+      "Name": "when",
+      "Children": [
+        "datetime"
+      ]
+    },
+    {
       "Name": "activity",
       "Children": []
     },
@@ -26,7 +32,29 @@
   "bing_entities": [
     "datetime"
   ],
-  "actions": [],
+  "actions": [
+    {
+      "actionName": "AddReminder",
+      "intentName": "AddReminder",
+      "actionParameters": [
+        {
+          "parameterName": "what",
+          "entityName": "activity",
+          "required": true
+        },
+        {
+          "parameterName": "who",
+          "entityName": "user",
+          "required": false
+        },
+        {
+          "parameterName": "when",
+          "entityName": "when",
+          "required": false
+        }
+      ]
+    }
+  ],
   "model_features": [
     {
       "name": "self",
@@ -59,7 +87,7 @@
       "entities": [
         {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -122,6 +150,11 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
           "entity": "user",
           "startPos": 1,
           "endPos": 1
@@ -154,6 +187,11 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "when::datetime",
+          "startPos": 7,
+          "endPos": 7
+        },
+        {
           "entity": "user",
           "startPos": 1,
           "endPos": 1
@@ -175,6 +213,11 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "when::datetime",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
           "entity": "user",
           "startPos": 1,
           "endPos": 1
@@ -192,7 +235,7 @@
       "entities": [
         {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -233,7 +276,7 @@
       "entities": [
         {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -252,6 +295,11 @@
       "text": "remind nathanandrews to call me tomorrow",
       "intent": "AddReminder",
       "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 5
+        },
         {
           "entity": "user",
           "startPos": 1,
@@ -290,8 +338,13 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 7
+        },
+        {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -305,6 +358,11 @@
       "text": "remind jeff loiola in 5 minutes to win at things",
       "intent": "AddReminder",
       "entities": [
+        {
+          "entity": "when",
+          "startPos": 3,
+          "endPos": 5
+        },
         {
           "entity": "user",
           "startPos": 1,
@@ -344,7 +402,7 @@
       "entities": [
         {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -401,6 +459,11 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "when::datetime",
+          "startPos": 2,
+          "endPos": 4
+        },
+        {
           "entity": "user",
           "startPos": 1,
           "endPos": 1
@@ -437,6 +500,11 @@
       "text": "remind jeffrey loiola to win at things in 5 minutes",
       "intent": "AddReminder",
       "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 7,
+          "endPos": 9
+        },
         {
           "entity": "user",
           "startPos": 1,
@@ -490,6 +558,11 @@
       "text": "remind nathanandrews to call me in two minutes",
       "intent": "AddReminder",
       "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 7
+        },
         {
           "entity": "user",
           "startPos": 1,
@@ -558,6 +631,11 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
           "entity": "user",
           "startPos": 1,
           "endPos": 1
@@ -594,6 +672,11 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "when::datetime",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
           "entity": "user",
           "startPos": 2,
           "endPos": 2
@@ -610,6 +693,11 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
           "entity": "activity",
           "startPos": 4,
           "endPos": 4
@@ -621,6 +709,16 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "when::datetime",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
           "entity": "activity",
           "startPos": 3,
           "endPos": 3
@@ -631,6 +729,11 @@
       "text": "remind me to call tomorrow",
       "intent": "AddReminder",
       "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 4,
+          "endPos": 4
+        },
         {
           "entity": "user",
           "startPos": 1,
@@ -648,6 +751,11 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
           "entity": "activity",
           "startPos": 3,
           "endPos": 5
@@ -658,6 +766,11 @@
       "text": "remind me to bring eggs",
       "intent": "AddReminder",
       "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
         {
           "entity": "activity",
           "startPos": 3,
@@ -692,7 +805,7 @@
       "entities": [
         {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -708,7 +821,7 @@
       "entities": [
         {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -730,11 +843,6 @@
         {
           "entity": "user",
           "startPos": 1,
-          "endPos": 1
-        },
-        {
-          "entity": "user",
-          "startPos": 2,
           "endPos": 2
         },
         {
@@ -753,6 +861,11 @@
       "text": "tell me to bring some eggs tomorrow",
       "intent": "AddReminder",
       "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 6,
+          "endPos": 6
+        },
         {
           "entity": "user",
           "startPos": 1,
@@ -798,11 +911,6 @@
         {
           "entity": "activity",
           "startPos": 3,
-          "endPos": 4
-        },
-        {
-          "entity": "activity",
-          "startPos": 5,
           "endPos": 8
         }
       ]
@@ -812,23 +920,13 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
           "entity": "activity",
           "startPos": 3,
-          "endPos": 4
-        },
-        {
-          "entity": "activity",
-          "startPos": 5,
-          "endPos": 5
-        },
-        {
-          "entity": "activity",
-          "startPos": 6,
-          "endPos": 7
-        },
-        {
-          "entity": "activity",
-          "startPos": 8,
           "endPos": 8
         }
       ]
@@ -871,7 +969,7 @@
       "entities": [
         {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -887,7 +985,7 @@
       "entities": [
         {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -903,7 +1001,7 @@
       "entities": [
         {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -919,7 +1017,7 @@
       "entities": [
         {
           "entity": "user",
-          "startPos": 1,
+          "startPos": 2,
           "endPos": 2
         },
         {
@@ -1022,6 +1120,575 @@
       "text": "thanks, but no thanks",
       "intent": "None",
       "entities": []
+    },
+    {
+      "text": "remind me to bring cars",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind will ballard to bring cars",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "remind nathan andrews to bring car",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "remind @ryan to bring cars",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "remind me to go home",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "are you out of control?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "remind willballard to bring eggs",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind nathanandrews to go hom",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind wballard to bring eggs",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "thanks",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "remind me to do things",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind @ryanfairchild to look at that je in 1 minute",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 8,
+          "endPos": 10
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "remind @nathanandrews to wear his rift tomorrow at 3pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 7,
+          "endPos": 9
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "hhh",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "hi remi, remind me to go to lunch in an hour.",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 9,
+          "endPos": 11
+        },
+        {
+          "entity": "user",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "activity",
+          "startPos": 6,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "remind me to do my taxes before this weekend",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 7,
+          "endPos": 8
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "remind me to call",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hu",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "remind me to call home",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "ji",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "remind nathan andrews to call me",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "remind me to do thing",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remi?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": ".map((w) => w.entity).join(' ')",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "hello",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "remind @willballard to watch the debugging",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "will asked me to chat with you",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "remind @willballard to watch the debugging tomorrow",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 7,
+          "endPos": 7
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "hi remi",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "remind @jeffloiola to deploy at 6pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind @nathanandrews to test tomorrow at 6pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 7
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind @nathanandrews to test tomorrow 6pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind @nathanandrews to pick up clothes friday 4pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 7,
+          "endPos": 8
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "remind @nathanandrews to pick up clothes friday at 4pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 7,
+          "endPos": 9
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "2016-04-14t05:00:00.000z -300",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "remind @ryanfairchild to take a shower",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "remind nathan andrews to test remi tomorrow",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "remind @nathanandrews to test at 6pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind nathan andrews to test remi",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
     }
   ]
 }
