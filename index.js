@@ -6,7 +6,7 @@ const builder = require('botbuilder')
 const _ = require('lodash')
 const moment = require('moment')
 
-const INSTRUCTIONS = "I'm sorry I didn't understand. Ask me to remind someone to do something."
+const INSTRUCTIONS = "I'm sorry I didn't understand. Ask me to remind someone to do something, that's what I'm here for."
 
 // Just a robot on HipChat, remember to set up your environment variables on
 // this won't work very well
@@ -23,6 +23,16 @@ bot.add('/', dialog)
 dialog.on('AddReminder', [
   // make sure this is really for somebody
   (session, args, next) => {
+    bot.fullProfile(session.userData.identity.jid)
+      .then((profile) => {
+        console.error('talking to ', JSON.stringify(profile))
+        session.userData.identity = profile
+        next(args)
+      })
+  }
+  ,
+
+  (session, args, next) => {
     console.error(JSON.stringify(args))
     let forWho = builder.EntityRecognizer.findEntity(args.entities, 'user')
     let match = undefined
@@ -33,7 +43,7 @@ dialog.on('AddReminder', [
       if (forWho.entity.indexOf('@ ') == 0) forWho.entity = `@${forWho.entity.slice(2)}`
       let users = _.values(bot.directory)
       match = builder.EntityRecognizer.findBestMatch(users.map((user) => user.mention_name), forWho.entity)
-        || builder.EntityRecognizer.findBestMatch(users.map((user) => user.name), forWho.entity)
+      || builder.EntityRecognizer.findBestMatch(users.map((user) => user.name), forWho.entity)
       if (!match) {
         session.send(`Sorry, I can't find ${forWho.entity}`).endDialog()
       } else {
@@ -45,7 +55,7 @@ dialog.on('AddReminder', [
         if (Object.is(forWho.entity.toLowerCase(), match.entity.toLowerCase())) {
           next({response: true})
         } else {
-          builder.Prompts.confirm(session, `Did you mean ${session.sessionState.reminder.who}?`)
+          builder.Prompts.confirm(session, `Did you mean @${session.sessionState.reminder.who.mention_name}?`)
         }
       }
     } else {
@@ -57,7 +67,6 @@ dialog.on('AddReminder', [
   (session, response, next) => {
     if (response.response) {
       session.send('Fantastic')
-      bot.fullProfile(session.sessionState.reminder.who.jid)
       next()
     } else {
       session.send('Sorry about that, try again for me.').endDialog()
@@ -88,9 +97,23 @@ dialog.on('AddReminder', [
   (session) => {
     let who = `@${session.sessionState.reminder.who.mention_name}`
     let what = session.sessionState.reminder.what
-    let when = session.sessionState.reminder.when
-    console.error(`Got it. I'll remind ${who}, ${moment(when).calendar()} to ${what}`)
-    session.send(`Got it. I'll remind ${who}, ${moment(when).calendar()} to ${what}`)
+    let when = moment(session.sessionState.reminder.when)
+    // convert from this time zone away from the local system difference with the requesting user
+    let offsetMinutes = when.utcOffset() - (session.userData.identity.timezone)
+    when.add(offsetMinutes, 'm')
+    // and set to the requestor timezone
+    when.utcOffset(session.userData.identity.timezone)
+    console.error(`Got it. I'll remind ${who}, ${when.calendar()} to ${what}`)
+    session.send(`Got it. I'll remind ${who}, ${when.calendar()} to ${what}`)
+    // need the full profile to get the target timezone
+    bot.fullProfile(session.sessionState.reminder.who.jid)
+      .then((profile) => {
+        // now we have all the data and timezone information for the target person
+        console.error('schedule for', JSON.stringify(profile))
+        // and set to the target user timezone
+        when.utcOffset(profile.timezone)
+        console.error(when.calendar())
+      })
     session.endDialog()
   }
 ])
