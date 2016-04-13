@@ -23,6 +23,7 @@ bot.add('/', dialog)
 dialog.on('AddReminder', [
   // make sure this is really for somebody
   (session, args, next) => {
+    console.error(JSON.stringify(args))
     let forWho = builder.EntityRecognizer.findEntity(args.entities, 'user')
     let match = undefined
     if (forWho) {
@@ -38,7 +39,7 @@ dialog.on('AddReminder', [
         session.sessionState.reminder = {
           fromLUIS: args,
           who: `@${match.entity}`,
-          what: builder.EntityRecognizer.findEntity(args.entities, 'activity').entity
+          what: builder.EntityRecognizer.findAllEntities(args.entities, 'activity')
         }
         if (Object.is(forWho.entity.toLowerCase(), match.entity.toLowerCase())) {
           next({response: true})
@@ -83,8 +84,11 @@ dialog.on('AddReminder', [
   ,
   // echo is the new confirm
   (session) => {
-    console.error(`Got it. I'll remind ${session.sessionState.reminder.who}, ${moment(session.sessionState.reminder.when).calendar()} to ${session.sessionState.reminder.what}`)
-    session.send(`Got it. I'll remind ${session.sessionState.reminder.who}, ${moment(session.sessionState.reminder.when).calendar()} to ${session.sessionState.reminder.what}`)
+    let who = session.sessionState.reminder.who
+    let what = session.sessionState.reminder.what.map((w) => w.entity).join(' ')
+    let when = session.sessionState.reminder.when
+    console.error(`Got it. I'll remind ${who}, ${moment(when).calendar()} to ${what}`)
+    session.send(`Got it. I'll remind ${who}, ${moment(when).calendar()} to ${what}`)
     session.endDialog()
   }
 ])
