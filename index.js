@@ -41,7 +41,6 @@ dialog.on('AddReminder', [
           what: builder.EntityRecognizer.findEntity(args.entities, 'activity').entity
         }
         if (Object.is(forWho.entity.toLowerCase(), match.entity.toLowerCase())) {
-          session.send(`${session.sessionState.reminder.who}`)
           next({response: true})
         } else {
           builder.Prompts.confirm(session, `Did you mean ${session.sessionState.reminder.who}?`)
