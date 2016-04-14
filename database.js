@@ -14,9 +14,10 @@ Net: conversations from the future, shoved in a table.
 const sqlite3 = require('sqlite3').verbose()
 const Promise = require('bluebird')
 const EventEmitter = require('events')
+const moment = require('moment')
 
 module.exports =
-  
+
   class Database extends EventEmitter {
 
     /**
@@ -28,10 +29,10 @@ module.exports =
       super()
       this.filename = filename
     }
-    
+
     /**
      * Open up and make the database right.
-     * @returns {Promise} - when resolve, the database is ready to go 
+     * @returns {Promise} - when resolved, the database is ready to go 
      */
     open () {
       return Promise.fromNode((callback) => {
@@ -49,19 +50,31 @@ module.exports =
         })
       }).then(() => {
         this.inserter = this.db.prepare('INSERT INTO reminder(who, what, [when]) VALUES(?,?,?)')
+        this.reminderer = this.db.prepare('SELECT who, what FROM reminder WHERE [when] < ?')
       })
     }
-   
-    
+
+
     /**
      * Make a new reminder row.
      * @param  {String} who
      * @param  {String} what
      * @param  {Number} when
      */
-    insertReminder(who, what, when) {
+    insertReminder (who, what, when) {
       return Promise.fromNode((callback) => {
         this.inserter.run(who, what, when, callback)
       })
     }
+
+    /**
+     * Get all reminders that are at their time, and are good to send.
+     * @returns {Promise} - resolves to an array of reminders
+     */
+    readyReminders () {
+      return Promise.fromNode((callback) => {
+        this.reminderer.all(moment().unix()).all(callback)
+      })      
+    }
+
 }
