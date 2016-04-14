@@ -144,12 +144,22 @@ db.open()
         .then((reminders) => {
           debug(JSON.stringify(reminders))
           reminders.forEach((reminder) => {
+            // this is all asynch, so we need to be sure profiles are available, if not
+            // get them on the next turn
             let reminderFrom = bot.directory[reminder.fromwho]
-            if (reminderFrom) {
-              bot.send(reminder.towho, `Reminder from @${reminderFrom.mention_name}\n${reminder.what}`)
-                .then(() => {
-                  debug('delete', reminder)
-                })
+            let reminderTo = bot.directory[reminder.towho]
+            if (reminderFrom && reminderTo) {
+              if (Object.is('online', reminderTo.presence)) {
+                debug(`Reminding`, JSON.stringify(reminderTo))
+                bot.send(
+                  reminder.towho,
+                  `Reminder from @${reminderFrom.mention_name} ${reminder.what}`)
+                  .then(() => {
+                    debug('delete', reminder)
+                  })
+              } else {
+                debug( `@${reminderTo.mention_name} is not available`)
+              }
             }
           })
         })
