@@ -155,10 +155,12 @@ db.open()
                   reminder.towho,
                   `Reminder from @${reminderFrom.mention_name} ${reminder.what}`)
                   .then(() => {
-                    debug('delete', reminder)
-                  })
+                    return db.deleteReminder(reminder)
+                  }).then(() => {
+                  debug('all reminded', reminder)
+                })
               } else {
-                debug( `@${reminderTo.mention_name} is not available`)
+                debug(`@${reminderTo.mention_name} is not available`)
               }
             }
           })

@@ -51,10 +51,10 @@ module.exports =
         })
       }).then(() => {
         this.inserter = this.db.prepare('INSERT INTO reminder(towho, fromwho, what, [when]) VALUES(?,?,?,?)')
-        this.reminderer = this.db.prepare('SELECT towho, fromwho, what FROM reminder WHERE [when] < ?')
+        this.reminderer = this.db.prepare('SELECT towho, fromwho, what, [when] FROM reminder WHERE [when] < ?')
+        this.deleter = this.db.prepare('DELETE FROM reminder WHERE towho=? AND fromwho=? AND what=? AND [when]=?')
       })
     }
-
 
     /**
      * Make a new reminder row.
@@ -76,7 +76,18 @@ module.exports =
     readyReminders () {
       return Promise.fromNode((callback) => {
         this.reminderer.all(moment().unix()).all(callback)
-      })      
+      })
+    }
+
+    /**
+     * Goodbye, cruel reminder...
+     * 
+     * @param reminder (description)
+     */
+    deleteReminder (reminder) {
+      return Promise.fromNode((callback) => {
+        this.deleter.run(reminder.towho, reminder.fromwho, reminder.what, reminder.when, callback)
+      })
     }
 
 }
