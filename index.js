@@ -5,8 +5,17 @@ const HipchatBot = require('botbuilder-hipchat')
 const builder = require('botbuilder')
 const _ = require('lodash')
 const moment = require('moment')
+const Database = require('./database')
 
-const INSTRUCTIONS = "I'm sorry I didn't understand. Ask me to remind someone to do something, that's what I'm here for."
+
+const INSTRUCTIONS = `
+I'm sorry I didn't understand.
+Ask me to remind someone to do something, that's what I'm here for.
+For example:
+  remind @willballard to buy more phones next thursday
+`
+
+let db = new Database(process.env.DATABASE)
 
 // Just a robot on HipChat, remember to set up your environment variables on
 // this won't work very well
@@ -113,9 +122,7 @@ dialog.on('AddReminder', [
       .then((profile) => {
         // now we have all the data and timezone information for the target person
         console.error('schedule for', JSON.stringify(profile))
-        // and set to the target user timezone
-        when.utcOffset(profile.timezone)
-        console.error(when.calendar())
+        return db.insertReminder(who, what, when.unix())
       })
     session.endDialog()
   }
@@ -124,4 +131,5 @@ dialog.on('AddReminder', [
 dialog.onDefault(builder.DialogAction.send(INSTRUCTIONS))
 
 // GO -- loop. Errors should just exit and auto-restart 
-bot.listen()
+db.open()
+  .then(bot.listen.bind(bot))
