@@ -122,7 +122,11 @@ dialog.on('AddReminder', [
       .then((profile) => {
         // now we have all the data and timezone information for the target person
         debug('schedule for', JSON.stringify(profile))
-        return db.insertReminder(who, what, when.unix())
+        return db.insertReminder(
+          session.sessionState.reminder.who.jid.bare().toString(),
+          session.userData.identity.jid.bare().toString(),
+          what,
+          when.unix())
       })
     session.endDialog()
   }
@@ -139,11 +143,20 @@ db.open()
       db.readyReminders()
         .then((reminders) => {
           debug(JSON.stringify(reminders))
+          reminders.forEach((reminder) => {
+            let reminderFrom = bot.directory[reminder.fromwho]
+            if (reminderFrom) {
+              bot.send(reminder.towho, `Reminder from @${reminderFrom.mention_name}\n${reminder.what}`)
+                .then(() => {
+                  debug('delete', reminder)
+                })
+            }
+          })
         })
         .then(() => {
           setTimeout(remind, 60 * 1000)
         })
     }
-    //kickoff
+    // kickoff
     remind()
   })

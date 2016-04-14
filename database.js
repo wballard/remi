@@ -42,28 +42,30 @@ module.exports =
         return Promise.fromNode((callback) => {
           this.db.run(`
             CREATE TABLE IF NOT EXISTS reminder(
-              who TEXT,
+              towho TEXT,
+              fromwho TEXT,
               what TEXT,
               [when] INTEGER
             )
           `, callback)
         })
       }).then(() => {
-        this.inserter = this.db.prepare('INSERT INTO reminder(who, what, [when]) VALUES(?,?,?)')
-        this.reminderer = this.db.prepare('SELECT who, what FROM reminder WHERE [when] < ?')
+        this.inserter = this.db.prepare('INSERT INTO reminder(towho, fromwho, what, [when]) VALUES(?,?,?,?)')
+        this.reminderer = this.db.prepare('SELECT towho, fromwho, what FROM reminder WHERE [when] < ?')
       })
     }
 
 
     /**
      * Make a new reminder row.
-     * @param  {String} who
+     * @param  {String} towho
+     * @param  {String} fromwho
      * @param  {String} what
      * @param  {Number} when
      */
-    insertReminder (who, what, when) {
+    insertReminder (towho, fromwho, what, when) {
       return Promise.fromNode((callback) => {
-        this.inserter.run(who, what, when, callback)
+        this.inserter.run(towho, fromwho, what, when, callback)
       })
     }
 
