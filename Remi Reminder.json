@@ -11,6 +11,10 @@
     {
       "Name": "None",
       "Children": []
+    },
+    {
+      "Name": "ChangeWhen",
+      "Children": []
     }
   ],
   "entities": [
@@ -51,6 +55,17 @@
           "parameterName": "when",
           "entityName": "when",
           "required": false
+        }
+      ]
+    },
+    {
+      "actionName": "ChangeWhen",
+      "intentName": "ChangeWhen",
+      "actionParameters": [
+        {
+          "parameterName": "when",
+          "entityName": "when::datetime",
+          "required": true
         }
       ]
     }
@@ -585,6 +600,11 @@
       "intent": "AddReminder",
       "entities": [
         {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
           "entity": "user",
           "startPos": 1,
           "endPos": 1
@@ -692,6 +712,11 @@
       "text": "remind @me to call tomorrow",
       "intent": "AddReminder",
       "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 5
+        },
         {
           "entity": "user",
           "startPos": 2,
@@ -1686,6 +1711,688 @@
         {
           "entity": "activity",
           "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "when is the last day ben can file his taxes",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "hey remi, how are you doing today?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "when is the last day i can file my taxes",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "session.userdata.identity",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "remind me to call hom",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind me to do things tomorrow",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind @nathanandrews to test tomorrow",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind @nathanandrews to test",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind nathan to call me",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind will ballard he has a call tomorrow at 5",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 7,
+          "endPos": 9
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "remind @willballard to buy more beer next week",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "remind @willballard to pay for the lights next monday",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "remind @willballard to test in one minute",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 7
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind nathanandrews to buy lunch at 11am",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind willballard to buy lunch at 8pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind @willballard to test in a minute",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 7
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind will he has a call tomorrow at 5",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 6,
+          "endPos": 8
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "tomorrow at 5pm",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 0,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "hey remi, i'd like to be reminded to go to lunch in 30 minutes",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 14,
+          "endPos": 16
+        },
+        {
+          "entity": "activity",
+          "startPos": 8,
+          "endPos": 13
+        }
+      ]
+    },
+    {
+      "text": "remind willballardto buy lunch tomorrow",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 2,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hey remi , i' d like to be reminded to go to lunch in 30 minutes",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 14,
+          "endPos": 16
+        },
+        {
+          "entity": "activity",
+          "startPos": 11,
+          "endPos": 13
+        }
+      ]
+    },
+    {
+      "text": "remind ryan fairchild to test remi now",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "remind me to make sure remi is deleting",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "remind ben hudgens to test remi now",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "got it. i'll remind @willballard, 04/21/2016 to do something",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 8,
+          "endPos": 8
+        },
+        {
+          "entity": "activity",
+          "startPos": 16,
+          "endPos": 17
+        }
+      ]
+    },
+    {
+      "text": "make that tomorrow at 5",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 2,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "change that to tomorrow",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "change that to an hour from now",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 3,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "change that to now",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "make that now",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "change that to 5pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "change that to 5 pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "make that 4pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "make that tomorrow at 6pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 2,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "make that 5pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "make that tomorrow at 6 pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 2,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "make that wednesday at 5 pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 2,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "make that next wednesday at 6 pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 2,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "remind me to test now",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "remind ben chang to test remi",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "remind will ballard to test tomorrow",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind ben chan to test remi",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hey remi, i'd like to be reminded to review the code in two hours",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 15,
+          "endPos": 16
+        },
+        {
+          "entity": "activity",
+          "startPos": 8,
+          "endPos": 13
+        }
+      ]
+    },
+    {
+      "text": "remind me to review the code in two hours",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 6,
+          "endPos": 8
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "make that 6 jun 2018",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 2,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "make that next wednesday at 9pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 2,
           "endPos": 5
         }
       ]

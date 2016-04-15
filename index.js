@@ -72,11 +72,13 @@ let bot = new HipchatBot({
   conference_host: process.env.JABBER_MUC_HOST
 })
 
+// run with LUIS
 let dialog = new builder.LuisDialog(process.env.LUIS_MODEL)
 bot.add('/', dialog)
 
+// The main add redminder dialog, collect, who/what/when and then store it
 dialog.on('AddReminder', [
-  // make sure this is really for somebody
+  // fetch the creator profile and set up an initial reminder object
   (session, args, next) => {
     session.sessionState.reminder = {
       fromLUIS: args,
@@ -90,6 +92,8 @@ dialog.on('AddReminder', [
       })
   }
   ,
+  // figure out who this is for, matching against the directory by name or mention_name
+  // and if it isn't clear, take a wild guess that you are trying to remind yourself
   (session, args, next) => {
     let forWho = builder.EntityRecognizer.findEntity(args.entities, 'user')
     let match = undefined
@@ -106,7 +110,7 @@ dialog.on('AddReminder', [
       } else {
         session.sessionState.reminder.who = users[match.index]
         if (Object.is(forWho.entity.toLowerCase(), match.entity.toLowerCase())) {
-          next({match: true})
+          next({response: true})
         } else {
           builder.Prompts.confirm(session, `Did you mean @${session.sessionState.reminder.who.mention_name}?`)
         }
@@ -120,16 +124,15 @@ dialog.on('AddReminder', [
   ,
   // do we really have a target person now?
   (session, response, next) => {
-    if (response.match) {
-      next()
-    } else if (response.response) {
+    if (response.response) {
       next()
     } else {
       session.send('Sorry about that, try again for me.').endDialog()
     }
   }
   ,
-  // make sure we know when
+  // make sure we know when, or ask for it as it seems natural to not always
+  // specify the time
   (session, response, next) => {
     let when = thoroughWhen(session.sessionState.reminder.fromLUIS.entities)
     if (when) {
@@ -140,6 +143,7 @@ dialog.on('AddReminder', [
     }
   }
   ,
+  // time in hand, parse and normalize it
   (session, when, next) => {
     if (when.response && when.response.resolution) {
       session.sessionState.reminder.when = flattenTime(when.response.resolution)
@@ -149,7 +153,8 @@ dialog.on('AddReminder', [
     }
   }
   ,
-  // echo is the new confirm
+  // echo is the new confirm! well more than that, put it in the database so it will be
+  // be an actual active reminder
   (session) => {
     let who = `@${session.sessionState.reminder.who.mention_name}`
     let what = session.sessionState.reminder.what
@@ -178,6 +183,7 @@ dialog.on('AddReminder', [
 
 // let folks change their mind when the last task should be
 dialog.on('ChangeWhen', [
+  // parse out the time, that's the real entity to recognize
   (session, args, next) => {
     let when = realizeTimezone(session, flattenTime(thoroughWhen(args.entities).resolution))
     if (when) {
@@ -220,10 +226,14 @@ dialog.on('ChangeWhen', [
 dialog.onDefault(builder.DialogAction.send(INSTRUCTIONS))
 
 // GO -- loop. Errors should just exit and auto-restart 
+// big promise chain so each resource is ready before we move on
+// starting with the database
 db.open()
+  // bot gets connected and listens to the hipchat server
   .then(bot.listen.bind(bot))
   // timer loop to get ready reminders, this chains past the promise to avoid double sends
   .then(() => {
+    // self scheduling timeout function
     let remind = function () {
       db.readyReminders()
         .then((reminders) => {
