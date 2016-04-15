@@ -32,6 +32,10 @@ bot.add('/', dialog)
 dialog.on('AddReminder', [
   // make sure this is really for somebody
   (session, args, next) => {
+    session.sessionState.reminder = {
+      fromLUIS: args,
+      what: builder.EntityRecognizer.findAllEntities(args.entities, 'activity').map((w) => w.entity).join(' ')
+    }
     bot.fullProfile(session.userData.identity.jid)
       .then((profile) => {
         debug('talking to ', JSON.stringify(profile))
@@ -41,7 +45,6 @@ dialog.on('AddReminder', [
   }
   ,
   (session, args, next) => {
-    debug(JSON.stringify(args))
     let forWho = builder.EntityRecognizer.findEntity(args.entities, 'user')
     let match = undefined
     if (forWho) {
@@ -55,11 +58,7 @@ dialog.on('AddReminder', [
       if (!match) {
         session.send(`Sorry, I can't find ${forWho.entity}`).endDialog()
       } else {
-        session.sessionState.reminder = {
-          fromLUIS: args,
-          who: users[match.index],
-          what: builder.EntityRecognizer.findAllEntities(args.entities, 'activity').map((w) => w.entity).join(' ')
-        }
+        session.sessionState.reminder.who = users[match.index]
         if (Object.is(forWho.entity.toLowerCase(), match.entity.toLowerCase())) {
           next({match: true})
         } else {
@@ -67,7 +66,9 @@ dialog.on('AddReminder', [
         }
       }
     } else {
-      session.send("Sorry, I can't tell who you mean, try a mention name.").endDialog()
+      // let's just take a swag that the reminder is for you
+      session.sessionState.reminder.who = session.userData.identity
+      builder.Prompts.confirm(session, `Remind you?`)
     }
   }
   ,
@@ -88,7 +89,7 @@ dialog.on('AddReminder', [
     builder.EntityRecognizer.findEntity(session.sessionState.reminder.fromLUIS.entities, 'builtin.datetime.date') ||
     builder.EntityRecognizer.findEntity(session.sessionState.reminder.fromLUIS.entities, 'builtin.datetime.datetime')
     if (when) {
-      session.sessionState.reminder.when = builder.EntityRecognizer.recognizeTime(when.entity)
+      session.sessionState.reminder.when = builder.EntityRecognizer.recognizeTime(when.entity) || when
       next({response: session.sessionState.reminder.when})
     } else {
       builder.Prompts.time(session, 'When?')
@@ -97,7 +98,12 @@ dialog.on('AddReminder', [
   ,
   (session, when, next) => {
     if (when.response && when.response.resolution) {
-      session.sessionState.reminder.when = when.response.resolution.start || when.response.resolution.date
+      if (when.response.resolution.time) {
+        session.sessionState.reminder.when = `${when.response.resolution.time}Z`
+      } else {
+        session.sessionState.reminder.when = when.response.resolution.start || when.response.resolution.date
+      }
+
       next()
     } else {
       session.send('Sorry, I have no idea when that is. Tell me when again.').endDialog()
