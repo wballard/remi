@@ -17,6 +17,52 @@ For example:
 
 let db = new Database(process.env.DATABASE)
 
+/**
+ * Try really hard to parse for date entities.
+ * 
+ * @param entities - entities extracted from LUIS
+ * @returns - a date or nothing
+ */
+function thoroughWhen (entities) {
+  let when =
+  builder.EntityRecognizer.findEntity(entities, 'when::datetime') ||
+  builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.time') ||
+  builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.date') ||
+  builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.datetime')
+  return builder.EntityRecognizer.recognizeTime(when.entity) || when
+}
+
+/**
+ * This server can be in a different timezone that the user. Adjust for this
+ * by comparing the time zone difference and adjusting the number of minutes.
+ * 
+ * @param session (description)
+ * @param when (description)
+ */
+function realizeTimezone (session, when) {
+  when = moment(when)
+  // convert from this time zone away from the local system difference with the requesting user
+  let offsetMinutes = when.utcOffset() - (session.userData.identity.timezone)
+  when.add(offsetMinutes, 'm')
+  // and set to the requestor timezone
+  when.utcOffset(session.userData.identity.timezone)
+  return when
+}
+
+/**
+ * Flatten out the different times that can come back from LUIS, most important
+ * mark time as UTC if unmarked.
+ * 
+ * @param resolution (description)
+ */
+function flattenTime (resolution) {
+  if (resolution.time) {
+    return `${resolution.time}Z`
+  } else {
+    return resolution.start || resolution.date
+  }
+}
+
 // Just a robot on HipChat, remember to set up your environment variables on
 // this won't work very well
 let bot = new HipchatBot({
@@ -85,11 +131,9 @@ dialog.on('AddReminder', [
   ,
   // make sure we know when
   (session, response, next) => {
-    let when = builder.EntityRecognizer.findEntity(session.sessionState.reminder.fromLUIS.entities, 'builtin.datetime.time') ||
-    builder.EntityRecognizer.findEntity(session.sessionState.reminder.fromLUIS.entities, 'builtin.datetime.date') ||
-    builder.EntityRecognizer.findEntity(session.sessionState.reminder.fromLUIS.entities, 'builtin.datetime.datetime')
+    let when = thoroughWhen(session.sessionState.reminder.fromLUIS.entities)
     if (when) {
-      session.sessionState.reminder.when = builder.EntityRecognizer.recognizeTime(when.entity) || when
+      session.sessionState.reminder.when = when
       next({response: session.sessionState.reminder.when})
     } else {
       builder.Prompts.time(session, 'When?')
@@ -98,12 +142,7 @@ dialog.on('AddReminder', [
   ,
   (session, when, next) => {
     if (when.response && when.response.resolution) {
-      if (when.response.resolution.time) {
-        session.sessionState.reminder.when = `${when.response.resolution.time}Z`
-      } else {
-        session.sessionState.reminder.when = when.response.resolution.start || when.response.resolution.date
-      }
-
+      session.sessionState.reminder.when = flattenTime(when.response.resolution)
       next()
     } else {
       session.send('Sorry, I have no idea when that is. Tell me when again.').endDialog()
@@ -114,19 +153,11 @@ dialog.on('AddReminder', [
   (session) => {
     let who = `@${session.sessionState.reminder.who.mention_name}`
     let what = session.sessionState.reminder.what
-    let when = moment(session.sessionState.reminder.when)
-    debug(session.sessionState.reminder.when)
-    // convert from this time zone away from the local system difference with the requesting user
-    let offsetMinutes = when.utcOffset() - (session.userData.identity.timezone)
-    when.add(offsetMinutes, 'm')
-    // and set to the requestor timezone
-    when.utcOffset(session.userData.identity.timezone)
-    debug(`Got it. I'll remind ${who}, ${when.calendar()} to ${what}`)
-    session.send(`Got it. I'll remind ${who}, ${when.calendar()} to ${what}`)
-    // need the full profile to get the target timezone
+    let when = realizeTimezone(session, session.sessionState.reminder.when)
     bot.fullProfile(session.sessionState.reminder.who.jid)
       .then((profile) => {
         // now we have all the data and timezone information for the target person
+        // stuff it in the user data, and our database
         debug('schedule for', JSON.stringify(profile))
         return db.insertReminder(
           session.sessionState.reminder.who.jid.bare().toString(),
@@ -134,10 +165,58 @@ dialog.on('AddReminder', [
           what,
           when.unix())
       })
-    session.endDialog()
+      .then((reminder) => session.userData.lastReminder = reminder)
+      .then(() => bot.setUserData(session.userData.identity.jid, session.userData))
+      .then(() => {
+        let message = `Got it. I'll remind ${who}, ${when.calendar()} to ${what}`
+        debug(message)
+        session.send(message)
+      })
+      .then(() => session.endDialog())
   }
 ])
 
+// let folks change their mind when the last task should be
+dialog.on('ChangeWhen', [
+  (session, args, next) => {
+    let when = realizeTimezone(session, flattenTime(thoroughWhen(args.entities).resolution))
+    if (when) {
+      next(when)
+    } else {
+      session.endDialog()
+    }
+  }
+  ,
+  // needs to be a last reminder to change
+  (session, when, next) => {
+    if (session.userData.lastReminder) {
+      db.deleteReminder(session.userData.lastReminder)
+        .then(() => {
+          session.userData.lastReminder.when = when.unix()
+          return session.userData.lastReminder
+        })
+        .then((reminder) => {
+          return db.insertReminder(
+            reminder.towho,
+            reminder.fromwho,
+            reminder.what,
+            reminder.when)
+        })
+        .then((reminder) => session.userData.lastReminder = reminder)
+        .then(() => bot.setUserData(session.userData.identity.jid, session.userData))
+        .then(() => {
+          let message = `I'll change that to ${when.calendar()}`
+          debug(message)
+          session.send(message)
+        })
+        .then(() => session.endDialog())
+    } else {
+      session.endDialog()
+    }
+  }
+])
+
+// instructions when we have on idea what to do
 dialog.onDefault(builder.DialogAction.send(INSTRUCTIONS))
 
 // GO -- loop. Errors should just exit and auto-restart 
@@ -158,13 +237,15 @@ db.open()
               if (Object.is('online', reminderTo.presence)) {
                 debug(`Reminding`, JSON.stringify(reminderTo))
                 bot.send(
-                  reminder.towho,
+                  reminderTo.jid.bare().toString(),
                   `Reminder from @${reminderFrom.mention_name} ${reminder.what}`)
-                  .then(() => {
-                    return db.deleteReminder(reminder)
-                  }).then(() => {
-                  debug('all reminded', reminder)
-                })
+                  .then(() => db.deleteReminder(reminder))
+                  .then(() => bot.getUserData(reminderTo.jid))
+                  .then((userData) => {
+                    userData.lastReminder = reminder
+                    return bot.setUserData(reminderTo.jid, userData)
+                  })
+                  .then(() => debug('all reminded', reminder))
               } else {
                 debug(`@${reminderTo.mention_name} is not available`)
               }

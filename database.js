@@ -66,6 +66,13 @@ module.exports =
     insertReminder (towho, fromwho, what, when) {
       return Promise.fromNode((callback) => {
         this.inserter.run(towho, fromwho, what, when, callback)
+      }).then(() => {
+        return {
+          towho,
+          fromwho,
+          what,
+          when 
+        }
       })
     }
 
