@@ -4,7 +4,7 @@ require('dotenv').config()
 const HipchatBot = require('botbuilder-hipchat')
 const builder = require('botbuilder')
 const _ = require('lodash')
-const moment = require('moment')
+const moment = require('moment-timezone')
 const Database = require('./database')
 const debug = require('debug')('remi')
 
@@ -40,15 +40,10 @@ function thoroughWhen (entities) {
  * @param when (description)
  */
 function realizeTimezone (session, when) {
-  when = moment(when)
   // convert from this time zone away from the local system difference with the requesting user
-  debug('user in', session.userData.identity.timezone, 'remi in', when.utcOffset())
-  let offsetMinutes = when.utcOffset() - (session.userData.identity.timezone)
-  debug('offset time', when, 'by', offsetMinutes)
-  when.add(offsetMinutes, 'm')
-  // and set to the requestor timezone
-  when.utcOffset(session.userData.identity.timezone)
-  return when
+  debug('user in', session.userData.identity.timezone, 'remi in', moment.tz.guess())
+  let ret =  moment.tz(moment(when).format("YYYYMMDDhhmmss"), "YYYYMMDDhhmmss", session.userData.identity.timezone)
+  return ret
 }
 
 /**
@@ -175,8 +170,9 @@ dialog.on('AddReminder', [
       .then((reminder) => session.userData.lastReminder = reminder)
       .then(() => bot.setUserData(session.userData.identity.jid, session.userData))
       .then(() => {
-        let message = `Got it. I'll remind ${who}, ${when.calendar()} to ${what}`
+        let message = `Got it. I'll remind ${who}, ${when.calendar()} ${when.zoneAbbr()} to ${what}`
         debug(message)
+        debug('local', moment().unix(), 'reminder', when.unix())
         session.send(message)
       })
       .then(() => session.endDialog())
@@ -239,14 +235,14 @@ db.open()
     let remind = function () {
       db.readyReminders()
         .then((reminders) => {
-          debug(JSON.stringify(reminders))
           reminders.forEach((reminder) => {
+            debug(JSON.stringify(reminder)) 
             // this is all asynch, so we need to be sure profiles are available, if not
             // get them on the next turn
             let reminderFrom = bot.directory[reminder.fromwho]
             let reminderTo = bot.directory[reminder.towho]
             if (reminderFrom && reminderTo) {
-              if (Object.is('online', reminderTo.presence)) {
+              if (Object.is('online', reminderTo.presence) || Object.is('chat', reminderTo.presence)) {
                 debug(`Reminding`, JSON.stringify(reminderTo))
                 bot.send(
                   reminderTo.jid.bare().toString(),
@@ -259,13 +255,13 @@ db.open()
                   })
                   .then(() => debug('all reminded', reminder))
               } else {
-                debug(`@${reminderTo.mention_name} is not available`)
+                debug(`@${reminderTo.mention_name} is not available`, JSON.stringify(reminderTo))
               }
             }
           })
         })
         .then(() => {
-          setTimeout(remind, 60 * 1000)
+          setTimeout(remind, 10 * 1000)
         })
     }
     // kickoff

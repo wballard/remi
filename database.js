@@ -51,7 +51,7 @@ module.exports =
         })
       }).then(() => {
         this.inserter = this.db.prepare('INSERT INTO reminder(towho, fromwho, what, [when]) VALUES(?,?,?,?)')
-        this.reminderer = this.db.prepare('SELECT towho, fromwho, what, [when] FROM reminder WHERE [when] < ?')
+        this.reminderer = this.db.prepare('SELECT towho, fromwho, what, [when] FROM reminder WHERE [when] < ? ORDER BY [when] ASC')
         this.deleter = this.db.prepare('DELETE FROM reminder WHERE towho=? AND fromwho=? AND what=? AND [when]=?')
       })
     }
