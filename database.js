@@ -51,7 +51,8 @@ module.exports =
         })
       }).then(() => {
         this.inserter = this.db.prepare('INSERT INTO reminder(towho, fromwho, what, [when]) VALUES(?,?,?,?)')
-        this.reminderer = this.db.prepare('SELECT towho, fromwho, what, [when] FROM reminder WHERE [when] < ? ORDER BY [when] ASC')
+        this.reminderer = this.db.prepare('SELECT towho, fromwho, what, [when] FROM reminder WHERE [when]<? ORDER BY [when] ASC')
+        this.lister = this.db.prepare('SELECT towho, fromwho, what, [when] FROM reminder WHERE towho=? ORDER BY [when] ASC')
         this.deleter = this.db.prepare('DELETE FROM reminder WHERE towho=? AND fromwho=? AND what=? AND [when]=?')
       })
     }
@@ -83,6 +84,18 @@ module.exports =
     readyReminders () {
       return Promise.fromNode((callback) => {
         this.reminderer.all(moment().unix()).all(callback)
+      })
+    }
+
+    
+    /**
+     * List all the reminers for a user.
+     * 
+     * @param jid specificaly 'to who'
+     */
+    listReminders(jid) {
+      return Promise.fromNode((callback) => {
+        this.lister.all(jid.bare().toString()).all(callback)
       })
     }
 

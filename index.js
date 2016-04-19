@@ -42,7 +42,7 @@ function thoroughWhen (entities) {
 function realizeTimezone (session, when) {
   // convert from this time zone away from the local system difference with the requesting user
   debug('user in', session.userData.identity.timezone, 'remi in', moment.tz.guess())
-  let ret =  moment.tz(moment(when).format("YYYYMMDDhhmmss"), "YYYYMMDDhhmmss", session.userData.identity.timezone)
+  let ret = moment.tz(moment(when).format('YYYYMMDDhhmmss'), 'YYYYMMDDhhmmss', session.userData.identity.timezone)
   return ret
 }
 
@@ -170,9 +170,7 @@ dialog.on('AddReminder', [
       .then((reminder) => session.userData.lastReminder = reminder)
       .then(() => bot.setUserData(session.userData.identity.jid, session.userData))
       .then(() => {
-        let message = `Got it. I'll remind ${who}, ${when.calendar()} ${when.zoneAbbr()} to ${what}`
-        debug(message)
-        debug('local', moment().unix(), 'reminder', when.unix())
+        let message = `Got it. I'll remind ${who} to ${what} on ${when.calendar()} ${when.zoneAbbr()} `
         session.send(message)
       })
       .then(() => session.endDialog())
@@ -220,6 +218,24 @@ dialog.on('ChangeWhen', [
   }
 ])
 
+// show me all my upcoming reminders
+dialog.on('ListReminders', [
+  (session, args, next) => {
+    bot.fullProfile(session.userData.identity.jid)
+      .then((profile) => db.listReminders(session.userData.identity.jid))
+      .then((reminders) => {
+        reminders.forEach((reminder, i) => {
+          let reminderFrom = bot.directory[reminder.fromwho]
+          let when = moment.unix(reminder.when)
+          when.tz(session.userData.identity.timezone)
+          let message = `${i+1}. Reminder from @${reminderFrom.mention_name} to ${reminder.what} on ${when.calendar()} ${when.zoneAbbr()}`
+          session.send(message)
+        })
+        session.endDialog()
+      })
+  }
+])
+
 // instructions when we have on idea what to do
 dialog.onDefault(builder.DialogAction.send(INSTRUCTIONS))
 
@@ -236,7 +252,7 @@ db.open()
       db.readyReminders()
         .then((reminders) => {
           reminders.forEach((reminder) => {
-            debug(JSON.stringify(reminder)) 
+            debug(JSON.stringify(reminder))
             // this is all asynch, so we need to be sure profiles are available, if not
             // get them on the next turn
             let reminderFrom = bot.directory[reminder.fromwho]
@@ -246,7 +262,7 @@ db.open()
                 debug(`Reminding`, JSON.stringify(reminderTo))
                 bot.send(
                   reminderTo.jid.bare().toString(),
-                  `Reminder from @${reminderFrom.mention_name} ${reminder.what}`)
+                  `Reminder from @${reminderFrom.mention_name} to ${reminder.what}`)
                   .then(() => db.deleteReminder(reminder))
                   .then(() => bot.getUserData(reminderTo.jid))
                   .then((userData) => {
