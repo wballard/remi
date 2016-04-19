@@ -42,7 +42,9 @@ function thoroughWhen (entities) {
 function realizeTimezone (session, when) {
   when = moment(when)
   // convert from this time zone away from the local system difference with the requesting user
+  debug('user in', session.userData.identity.timezone, 'remi in', when.utcOffset())
   let offsetMinutes = when.utcOffset() - (session.userData.identity.timezone)
+  debug('offset time', when, 'by', offsetMinutes)
   when.add(offsetMinutes, 'm')
   // and set to the requestor timezone
   when.utcOffset(session.userData.identity.timezone)
