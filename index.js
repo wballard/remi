@@ -29,7 +29,7 @@ function thoroughWhen (entities) {
   builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.time') ||
   builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.date') ||
   builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.datetime')
-  return builder.EntityRecognizer.recognizeTime(when.entity) || when
+  return builder.EntityRecognizer.recognizeTime((when || {}).entity) || when
 }
 
 /**
@@ -42,7 +42,7 @@ function thoroughWhen (entities) {
 function realizeTimezone (session, when) {
   // convert from this time zone away from the local system difference with the requesting user
   debug('user in', session.userData.identity.timezone, 'remi in', moment.tz.guess())
-  let ret = moment.tz(moment(when).format('YYYYMMDDhhmmss'), 'YYYYMMDDhhmmss', session.userData.identity.timezone)
+  let ret = moment.tz(moment(when).format('YYYYMMDDHHmmss'), 'YYYYMMDDHHmmss', session.userData.identity.timezone)
   return ret
 }
 
@@ -74,7 +74,8 @@ let dialog = new builder.LuisDialog(process.env.LUIS_MODEL)
 bot.add('/', dialog)
 
 // The main add redminder dialog, collect, who/what/when and then store it
-dialog.on('AddReminder', [
+dialog.on('AddReminder', '/AddReminder')
+bot.add('/AddReminder', [
   // fetch the creator profile and set up an initial reminder object
   (session, args, next) => {
     session.sessionState.reminder = {
@@ -178,7 +179,9 @@ dialog.on('AddReminder', [
 ])
 
 // let folks change their mind when the last task should be
-dialog.on('ChangeWhen', [
+
+dialog.on('ChangeWhen', '/ChangeWhen')
+bot.add('/ChangeWhen', [
   // parse out the time, that's the real entity to recognize
   (session, args, next) => {
     let when = realizeTimezone(session, flattenTime(thoroughWhen(args.entities).resolution))
@@ -219,20 +222,46 @@ dialog.on('ChangeWhen', [
 ])
 
 // show me all my upcoming reminders
-dialog.on('ListReminders', [
+dialog.on('ListReminders', '/ListReminders')
+bot.add('/ListReminders', [
   (session, args, next) => {
     bot.fullProfile(session.userData.identity.jid)
       .then((profile) => db.listReminders(session.userData.identity.jid))
       .then((reminders) => {
+        if (!reminders.length) {
+          let message = "You don't have any remaining reminders."
+          session.send(message)
+        }
         reminders.forEach((reminder, i) => {
           let reminderFrom = bot.directory[reminder.fromwho]
           let when = moment.unix(reminder.when)
           when.tz(session.userData.identity.timezone)
-          let message = `${i+1}. Reminder from @${reminderFrom.mention_name} to ${reminder.what} on ${when.calendar()} ${when.zoneAbbr()}`
+          let message = `${i + 1}. Reminder from @${reminderFrom.mention_name} to ${reminder.what} on ${when.calendar()} ${when.zoneAbbr()}`
           session.send(message)
         })
         session.endDialog()
       })
+  }
+])
+
+// nuke a reminder
+dialog.on('DeleteReminder', '/DeleteReminder')
+bot.add('/DeleteReminder', [
+  (session, args, next) => {
+    bot.fullProfile(session.userData.identity.jid)
+      .then((profile) => db.listReminders(session.userData.identity.jid))
+      .then((reminders) => {
+        let which = builder.EntityRecognizer.parseNumber([builder.EntityRecognizer.findEntity(args.entities, 'builtin.number')]) - 1
+        if (reminders[which]) {
+          session.send(`Got it, ${reminders[which].what} deleted`)
+          return db.deleteReminder(reminders[which])
+        } else {
+          session.send('I could not find that reminder, here is the list.')
+        }
+      }).then((args) => {
+        session.beginDialog('/ListReminders')
+        session.endDialog()
+    })
   }
 ])
 
