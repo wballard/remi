@@ -2532,6 +2532,96 @@
           "endPos": 4
         }
       ]
+    },
+    {
+      "text": "remind me to call home at 8",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind me to call home at 8pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "add a reminder to call home at 8pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 7,
+          "endPos": 7
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "make that tomorrow at 3pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 2,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "remind me to wake up at 6am",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
     }
   ]
 }
