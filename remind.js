@@ -3,14 +3,7 @@
 Loop to remind folks.
 */
 
-require('dotenv').config()
-const HipchatBot = require('botbuilder-hipchat')
-const builder = require('botbuilder')
-const _ = require('lodash')
-const moment = require('moment-timezone')
-const Database = require('./database')
 const debug = require('debug')('remi')
-const {flattenTime, thoroughWhen, realizeTimezone} = require('./datetime')
 
 // self scheduling timeout function
 function remind (bot, db) {
@@ -45,4 +38,4 @@ function remind (bot, db) {
       setTimeout(() => remind(bot, db), 10 * 1000)
     })
 }
-module.exports = remind
+module.exports = (bot, db) => remind(bot, db)
