@@ -1,6 +1,6 @@
 'use strict'
 /*
-Loop to remind folks.
+Add a new reminder.
 */
 
 const debug = require('debug')('remi')

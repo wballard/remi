@@ -9,7 +9,10 @@ const Database = require('./database')
 const debug = require('debug')('remi')
 const {flattenTime, thoroughWhen, realizeTimezone} = require('./datetime')
 const remind = require('./remind')
-const add = require('./dialogs/add')
+const addreminder = require('./dialogs/addreminder')
+const listreminders = require('./dialogs/listreminders')
+const deletereminder = require('./dialogs/deletereminder')
+const changewhen = require('./dialogs/changewhen')
 
 const INSTRUCTIONS = `
 I'm sorry I didn't understand.
@@ -39,94 +42,19 @@ bot.add('/', dialog)
 
 // The main add redminder dialog, collect, who/what/when and then store it
 dialog.on('AddReminder', '/AddReminder')
-bot.add('/AddReminder', add(bot, db))
+bot.add('/AddReminder', addreminder(bot, db))
 
 // let folks change their mind when the last task should be
-
 dialog.on('ChangeWhen', '/ChangeWhen')
-bot.add('/ChangeWhen', [
-  // parse out the time, that's the real entity to recognize
-  (session, args, next) => {
-    let when = realizeTimezone(session, flattenTime(thoroughWhen(args.entities).resolution))
-    if (when) {
-      next(when)
-    } else {
-      session.endDialog()
-    }
-  }
-  ,
-  // needs to be a last reminder to change
-  (session, when, next) => {
-    if (session.userData.lastReminder) {
-      db.deleteReminder(session.userData.lastReminder)
-        .then(() => {
-          session.userData.lastReminder.when = when.unix()
-          return session.userData.lastReminder
-        })
-        .then((reminder) => {
-          return db.insertReminder(
-            reminder.towho,
-            reminder.fromwho,
-            reminder.what,
-            reminder.when)
-        })
-        .then((reminder) => session.userData.lastReminder = reminder)
-        .then(() => bot.setUserData(session.userData.identity.jid, session.userData))
-        .then(() => {
-          let message = `I'll change that to ${when.calendar()}`
-          debug(message)
-          session.send(message)
-        })
-        .then(() => session.endDialog())
-    } else {
-      session.endDialog()
-    }
-  }
-])
+bot.add('/ChangeWhen', changewhen(bot, db))
 
 // show me all my upcoming reminders
 dialog.on('ListReminders', '/ListReminders')
-bot.add('/ListReminders', [
-  (session, args, next) => {
-    bot.fullProfile(session.userData.identity.jid)
-      .then((profile) => db.listReminders(session.userData.identity.jid))
-      .then((reminders) => {
-        if (!reminders.length) {
-          let message = "You don't have any remaining reminders."
-          session.send(message)
-        }
-        reminders.forEach((reminder, i) => {
-          let reminderFrom = bot.directory[reminder.fromwho]
-          let when = moment.unix(reminder.when)
-          when.tz(session.userData.identity.timezone)
-          let message = `${i + 1}. Reminder from @${reminderFrom.mention_name} to ${reminder.what} on ${when.calendar()} ${when.zoneAbbr()}`
-          session.send(message)
-        })
-        session.endDialog()
-      })
-  }
-])
+bot.add('/ListReminders', listreminders(bot, db))
 
 // nuke a reminder
 dialog.on('DeleteReminder', '/DeleteReminder')
-bot.add('/DeleteReminder', [
-  (session, args, next) => {
-    bot.fullProfile(session.userData.identity.jid)
-      .then((profile) => db.listReminders(session.userData.identity.jid))
-      .then((reminders) => {
-        let which = builder.EntityRecognizer.parseNumber([builder.EntityRecognizer.findEntity(args.entities, 'builtin.number')]) - 1
-        if (reminders[which]) {
-          session.send(`Got it, ${reminders[which].what} deleted`)
-          return db.deleteReminder(reminders[which])
-        } else {
-          session.send('I could not find that reminder, here is the list.')
-        }
-      }).then((args) => {
-        session.beginDialog('/ListReminders')
-        session.endDialog()
-    })
-  }
-])
+bot.add('/DeleteReminder', deletereminder(bot, db))
 
 // instructions when we have on idea what to do
 dialog.onDefault(builder.DialogAction.send(INSTRUCTIONS))
