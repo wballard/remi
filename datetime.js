@@ -5,7 +5,6 @@ const _ = require('lodash')
 const moment = require('moment-timezone')
 const debug = require('debug')('remi')
 
-
 /**
  * Try really hard to parse for date entities.
  * 
@@ -13,12 +12,17 @@ const debug = require('debug')('remi')
  * @returns - a date or nothing
  */
 function thoroughWhen (entities) {
-  let when =
-  builder.EntityRecognizer.findEntity(entities, 'when::datetime') ||
-  builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.time') ||
-  builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.date') ||
-  builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.datetime')
-  return builder.EntityRecognizer.recognizeTime((when || {}).entity) || when
+  try {
+    let when =
+    builder.EntityRecognizer.findEntity(entities, 'when::datetime') ||
+    builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.time') ||
+    builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.date') ||
+    builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.datetime')
+    return builder.EntityRecognizer.resolveTime([when]) || builder.EntityRecognizer.recognizeTime(when.entity).resolution.start
+  } catch(e) {
+    debug(e)
+    return undefined
+  }
 }
 
 /**
@@ -29,28 +33,17 @@ function thoroughWhen (entities) {
  * @param when (description)
  */
 function realizeTimezone (session, when) {
-  // convert from this time zone away from the local system difference with the requesting user
-  debug('user in', session.userData.identity.timezone, 'remi in', moment.tz.guess())
-  let ret = moment.tz(moment(when).format('YYYYMMDDHHmmss'), 'YYYYMMDDHHmmss', session.userData.identity.timezone)
-  return ret
-}
-
-/**
- * Flatten out the different times that can come back from LUIS, most important
- * mark time as UTC if unmarked.
- * 
- * @param resolution (description)
- */
-function flattenTime (resolution) {
-  if (resolution.time) {
-    return `${resolution.time}Z`
+  if (when) {
+    // convert from this time zone away from the local system difference with the requesting user
+    debug('user in', session.userData.identity.timezone, 'remi in', moment.tz.guess())
+    let ret = moment.tz(when.toISOString().substring(0, 19), 'YYYY-MM-DDTHH:mm:ss', session.userData.identity.timezone)
+    return ret
   } else {
-    return resolution.start || resolution.date
+    return undefined
   }
 }
 
 module.exports = {
   thoroughWhen,
-  realizeTimezone,
-  flattenTime
+  realizeTimezone
 }

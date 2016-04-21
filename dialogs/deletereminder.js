@@ -5,7 +5,7 @@ Delete a reminder from your list.
 
 const debug = require('debug')('remi')
 const builder = require('botbuilder')
-const {flattenTime, thoroughWhen, realizeTimezone} = require('../datetime')
+const {thoroughWhen, realizeTimezone} = require('../datetime')
 const _ = require('lodash')
 
 module.exports = function (bot, db) {

@@ -5,14 +5,14 @@ Change the last reminder schedule.
 
 const debug = require('debug')('remi')
 const builder = require('botbuilder')
-const {flattenTime, thoroughWhen, realizeTimezone} = require('../datetime')
+const {thoroughWhen, realizeTimezone} = require('../datetime')
 const _ = require('lodash')
 
 module.exports = function (bot, db) {
   return [
     // parse out the time, that's the real entity to recognize
     (session, args, next) => {
-      let when = realizeTimezone(session, flattenTime(thoroughWhen(args.entities).resolution))
+      let when = realizeTimezone(session, thoroughWhen(args.entities))
       if (when) {
         next(when)
       } else {

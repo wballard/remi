@@ -5,7 +5,7 @@ Add a new reminder.
 
 const debug = require('debug')('remi')
 const builder = require('botbuilder')
-const {flattenTime, thoroughWhen, realizeTimezone} = require('../datetime')
+const {thoroughWhen, realizeTimezone} = require('../datetime')
 const _ = require('lodash')
 
 module.exports = function (bot, db) {
@@ -69,7 +69,7 @@ module.exports = function (bot, db) {
       let when = thoroughWhen(session.sessionState.reminder.fromLUIS.entities)
       if (when) {
         session.sessionState.reminder.when = when
-        next({response: session.sessionState.reminder.when})
+        next(when)
       } else {
         builder.Prompts.time(session, 'When?')
       }
@@ -77,8 +77,10 @@ module.exports = function (bot, db) {
     ,
     // time in hand, parse and normalize it
     (session, when, next) => {
-      if (when.response && when.response.resolution) {
-        session.sessionState.reminder.when = flattenTime(when.response.resolution)
+      if (when.response) {
+        session.sessionState.reminder.when = builder.EntityRecognizer.resolveTime([when.response])
+        next()
+      } else if (when) {
         next()
       } else {
         session.send('Sorry, I have no idea when that is. Tell me when again.').endDialog()
