@@ -35,7 +35,7 @@ module.exports = function (bot, db) {
         }
         if (forWho.entity.indexOf('@ ') == 0) forWho.entity = `@${forWho.entity.slice(2)}`
         let users = _.values(bot.directory)
-        match = builder.EntityRecognizer.findBestMatch(users.map((user) => user.mention_name), forWho.entity)
+        match = builder.EntityRecognizer.findBestMatch(users.map((user) => user.mention_name || ''), forWho.entity)
         || builder.EntityRecognizer.findBestMatch(users.map((user) => user.name), forWho.entity)
         if (!match) {
           session.send(`Sorry, I can't find ${forWho.entity}`).endDialog()

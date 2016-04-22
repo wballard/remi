@@ -27,6 +27,11 @@ let bot = new HipchatBot({
   conference_host: process.env.JABBER_MUC_HOST
 })
 
+//in group chat, require explict address by @name
+bot.groupFilter = (session, stanza, callback) => {
+  callback(null, stanza.text.toLowerCase().indexOf(bot.profile.NICKNAME.toLowerCase()) >= 0)
+}
+
 // run with LUIS
 let dialog = new builder.LuisDialog(process.env.LUIS_MODEL)
 bot.add('/', dialog)
