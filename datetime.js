@@ -36,7 +36,7 @@ function realizeTimezone (session, when) {
   if (when) {
     // convert from this time zone away from the local system difference with the requesting user
     debug('user in', session.userData.identity.timezone, 'remi in', moment.tz.guess())
-    let ret = moment.tz(when.toISOString().substring(0, 19), 'YYYY-MM-DDTHH:mm:ss', session.userData.identity.timezone)
+    let ret = moment.tz(`${when.toISOString().substring(0, 19)}Z`, 'YYYY-MM-DDTHH:mm:ssZ', session.userData.identity.timezone)
     return ret
   } else {
     return undefined
