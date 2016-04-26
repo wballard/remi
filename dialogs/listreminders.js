@@ -5,7 +5,6 @@ List out all your reminders.
 
 const debug = require('debug')('remi')
 const builder = require('botbuilder')
-const {thoroughWhen, realizeTimezone} = require('../datetime')
 const _ = require('lodash')
 const moment = require('moment')
 

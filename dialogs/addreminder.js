@@ -5,7 +5,7 @@ Add a new reminder.
 
 const debug = require('debug')('remi')
 const builder = require('botbuilder')
-const {thoroughWhen, realizeTimezone} = require('../datetime')
+const {thoroughWhen} = require('../datetime')
 const _ = require('lodash')
 
 module.exports = function (bot, db) {
@@ -66,7 +66,7 @@ module.exports = function (bot, db) {
     // make sure we know when, or ask for it as it seems natural to not always
     // specify the time
     (session, response, next) => {
-      let when = thoroughWhen(session.sessionState.reminder.fromLUIS.entities)
+      let when = thoroughWhen(session, session.sessionState.reminder.fromLUIS.entities)
       if (when) {
         session.sessionState.reminder.when = when
         next(when)
@@ -78,7 +78,7 @@ module.exports = function (bot, db) {
     // time in hand, parse and normalize it
     (session, when, next) => {
       if (when.response) {
-        session.sessionState.reminder.when = builder.EntityRecognizer.resolveTime([when.response])
+        session.sessionState.reminder.when = thoroughWhen(session, [when])
         next()
       } else if (when) {
         next()
@@ -90,9 +90,10 @@ module.exports = function (bot, db) {
     // echo is the new confirm! well more than that, put it in the database so it will be
     // be an actual active reminder
     (session) => {
+      //just shortening below
       let who = `@${session.sessionState.reminder.who.mention_name}`
       let what = session.sessionState.reminder.what
-      let when = realizeTimezone(session, session.sessionState.reminder.when)
+      let when = session.sessionState.reminder.when
       bot.fullProfile(session.sessionState.reminder.who.jid)
         .then((profile) => {
           // now we have all the data and timezone information for the target person
@@ -101,8 +102,8 @@ module.exports = function (bot, db) {
           return db.insertReminder(
             session.sessionState.reminder.who.jid.bare().toString(),
             session.userData.identity.jid.bare().toString(),
-            what,
-            when.unix())
+            session.sessionState.reminder.what,
+            session.sessionState.reminder.when.unix())
         })
         .then((reminder) => session.userData.lastReminder = reminder)
         .then(() => bot.setUserData(session.userData.identity.jid, session.userData))
