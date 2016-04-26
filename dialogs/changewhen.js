@@ -14,38 +14,57 @@ module.exports = function (bot, db) {
     (session, args, next) => {
       let when = thoroughWhen(session, args.entities)
       if (when) {
-        next(when)
+        next([args, when])
       } else {
         session.endDialog()
       }
     }
     ,
-    // needs to be a last reminder to change
-    (session, when, next) => {
-      if (session.userData.lastReminder) {
-        db.deleteReminder(session.userData.lastReminder)
-          .then(() => {
-            session.userData.lastReminder.when = when.unix()
-            return session.userData.lastReminder
+    // either the last -- or the specific reminder will be changed
+    (session, [args, when], next) => {
+      let whichNumber = builder.EntityRecognizer.parseNumber([builder.EntityRecognizer.findEntity(args.entities, 'builtin.number')]) - 1
+      if (whichNumber) {
+        bot.fullProfile(session.userData.identity.jid)
+          .then((profile) => db.listReminders(session.userData.identity.jid))
+          .then((reminders) => {
+            if (reminders[whichNumber]) {
+              next([reminders[whichNumber], when])
+            } else {
+              session.send('I could not find that reminder, here is the list.')
+              session.endDialog()
+            }
           })
-          .then((reminder) => {
-            return db.insertReminder(
-              reminder.towho,
-              reminder.fromwho,
-              reminder.what,
-              reminder.when)
-          })
-          .then((reminder) => session.userData.lastReminder = reminder)
-          .then(() => bot.setUserData(session.userData.identity.jid, session.userData))
-          .then(() => {
-            let message = `I'll change that to ${when.calendar()}`
-            debug(message)
-            session.send(message)
-          })
-          .then(() => session.endDialog())
+      }
+      else if (session.userData.lastReminder) {
+        next([session.userData.lastReminder, when])
       } else {
         session.endDialog()
       }
+    }
+    ,
+    (session, [which, when], next) => {
+      db.deleteReminder(which)
+        .then(() => {
+          which.when = when.unix()
+        })
+        .then(() => {
+          return db.insertReminder(
+            which.towho,
+            which.fromwho,
+            which.what,
+            which.when)
+        })
+        .then(() => session.userData.lastReminder = which)
+        // force save the user session, this is maybe overkill, need to understand the lifecycle better
+        .then(() => bot.setUserData(session.userData.identity.jid, session.userData))
+        .then(() => {
+          let message = `I'll change that to ${when.calendar()}`
+          debug(message)
+          session.send(message)
+        })
+        .then(() => {
+          session.endDialog()
+        })
     }
   ]
 }

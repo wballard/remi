@@ -2622,6 +2622,117 @@
           "endPos": 4
         }
       ]
+    },
+    {
+      "text": "reminder andrew collier to stop talking in three minutes",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 6,
+          "endPos": 8
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "can you remind benjamin hudgens to shut up on monday morning",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 9,
+          "endPos": 10
+        },
+        {
+          "entity": "user",
+          "startPos": 3,
+          "endPos": 4
+        },
+        {
+          "entity": "activity",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "remind andrew collier to stop talking at 6:08p",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 7,
+          "endPos": 9
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "change 3 to next friday",
+      "intent": "ChangeWhen",
+      "entities": []
+    },
+    {
+      "text": "make 2 next friday",
+      "intent": "ChangeWhen",
+      "entities": []
+    },
+    {
+      "text": "can you change 4 to next friday",
+      "intent": "ChangeWhen",
+      "entities": []
+    },
+    {
+      "text": "alter 1 to be tomorrow",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when::datetime",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "set 2 for 6pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "change 2 to 4pm",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
     }
   ]
 }
