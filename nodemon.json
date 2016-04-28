@@ -2,6 +2,6 @@
     "ignore": ["test/*"],
     "ext": "js json",
     "execMap": {
-        "js": "node --harmony_destructuring"
+        "js": "node"
     }
 }
