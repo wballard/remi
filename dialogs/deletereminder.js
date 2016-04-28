@@ -15,15 +15,12 @@ module.exports = function (bot, db) {
         .then((reminders) => {
           let which = builder.EntityRecognizer.parseNumber([builder.EntityRecognizer.findEntity(args.entities, 'builtin.number')]) - 1
           if (reminders[which]) {
-            session.send(`Got it, ${reminders[which].what} deleted`)
+            session.endDialog(`Got it, ${reminders[which].what} deleted`)
             return db.deleteReminder(reminders[which])
           } else {
             session.send('I could not find that reminder, here is the list.')
+            session.beginDialog('/ListReminders')
           }
-        })
-        .then((args) => {
-          session.beginDialog('/ListReminders')
-          session.endDialog()
         })
     }
   ]

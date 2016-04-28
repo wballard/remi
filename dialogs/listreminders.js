@@ -25,6 +25,8 @@ module.exports = function (bot, db) {
             let message = `${i + 1}. Reminder from @${reminderFrom.mention_name} to ${reminder.what} on ${when.calendar()} ${when.zoneAbbr()}`
             session.send(message)
           })
+        })
+        .finally(() => {
           session.endDialog()
         })
     }

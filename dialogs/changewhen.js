@@ -12,18 +12,22 @@ module.exports = function (bot, db) {
   return [
     // parse out the time, that's the real entity to recognize
     (session, args, next) => {
-      let when = thoroughWhen(session, args.entities)
-      if (when) {
-        next([args, when])
-      } else {
-        session.endDialog()
-      }
+      bot.fullProfile(session.userData.identity.jid)
+        .then((profile) => {
+          debug('talking to ', JSON.stringify(profile))
+          session.userData.identity = profile
+          let when = thoroughWhen(session, args.entities)
+          if (when) {
+            next([args, when])
+          }
+        })
     }
     ,
     // either the last -- or the specific reminder will be changed
-    (session, [args, when], next) => {
-      let whichNumber = builder.EntityRecognizer.parseNumber([builder.EntityRecognizer.findEntity(args.entities, 'builtin.number')]) - 1
-      if (whichNumber) {
+    (session, [args, when] , next) => {
+      let numbered = builder.EntityRecognizer.findEntity(args.entities, 'builtin.number')
+      if (numbered) {
+        let whichNumber = builder.EntityRecognizer.parseNumber([numbered]) - 1
         bot.fullProfile(session.userData.identity.jid)
           .then((profile) => db.listReminders(session.userData.identity.jid))
           .then((reminders) => {
@@ -31,18 +35,16 @@ module.exports = function (bot, db) {
               next([reminders[whichNumber], when])
             } else {
               session.send('I could not find that reminder, here is the list.')
-              session.endDialog()
+              session.beginDialog('/ListReminders')
             }
           })
       }
       else if (session.userData.lastReminder) {
         next([session.userData.lastReminder, when])
-      } else {
-        session.endDialog()
       }
     }
     ,
-    (session, [which, when], next) => {
+    (session, [which, when] , next) => {
       db.deleteReminder(which)
         .then(() => {
           which.when = when.unix()
@@ -60,10 +62,7 @@ module.exports = function (bot, db) {
         .then(() => {
           let message = `I'll change that to ${when.calendar()}`
           debug(message)
-          session.send(message)
-        })
-        .then(() => {
-          session.endDialog()
+          session.endDialog(message)
         })
     }
   ]

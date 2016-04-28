@@ -91,11 +91,11 @@ module.exports =
     /**
      * List all the reminers for a user.
      * 
-     * @param jid specificaly 'to who'
+     * @param jidstring specificaly 'to who'
      */
-    listReminders(jid) {
+    listReminders(jidstring) {
       return Promise.fromNode((callback) => {
-        this.lister.all(jid.bare().toString()).all(callback)
+        this.lister.all(jidstring).all(callback)
       })
     }
 

@@ -14,27 +14,38 @@ const debug = require('debug')('remi')
  * @returns - a date or nothing
  */
 function thoroughWhen (session, entities) {
-  try {
-    //lots of null checking, this is really a kind of try-parse
-    let maybeDate = builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.date')
-    if (maybeDate) {
-      let utcResolvedTime = builder.EntityRecognizer.resolveTime([maybeDate]) || builder.EntityRecognizer.recognizeTime(maybeDate.entity).resolution.start
-      if (utcResolvedTime) {
-        let localResolvedTime = moment.tz(`${utcResolvedTime.toISOString().substring(0, 19)}`, 'YYYY-MM-DDTHH:mm:ss', session.userData.identity.timezone)
-        return localResolvedTime.set('hour', 12)
-      }
-    }
-    let when =
-    builder.EntityRecognizer.findEntity(entities, 'when::datetime') ||
-    builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.date') ||
-    builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.time') ||
-    builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.datetime') 
-    let remiTime = builder.EntityRecognizer.resolveTime([when]) || builder.EntityRecognizer.recognizeTime(when.entity).resolution.start
-    return moment.tz(`${remiTime.toISOString().substring(0, 19)}Z`, 'YYYY-MM-DDTHH:mm:ssZ', session.userData.identity.timezone)
-  } catch(e) {
-    debug(e)
-    return undefined
+  // check first for a full phrase recognition
+  let datetime = builder.EntityRecognizer.findEntity(entities, 'when::datetime')
+  if (!datetime) {
+    datetime = builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.datetime')
   }
+  let date = builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.date')
+  let time = builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.time')
+
+  // this is effectively a kind of try/parse
+  if (datetime) {
+    let remiTime = builder.EntityRecognizer.resolveTime([datetime]) || builder.EntityRecognizer.recognizeTime(datetime.entity).resolution.start
+    return moment.tz(`${remiTime.toISOString().substring(0, 19)}Z`, 'YYYY-MM-DDTHH:mm:ssZ', session.userData.identity.timezone)
+  }
+  if (date && time) {
+    let remiTime = builder.EntityRecognizer.recognizeTime(`${date.entity} ${time.entity}`).resolution.start
+    return moment.tz(`${remiTime.toISOString().substring(0, 19)}Z`, 'YYYY-MM-DDTHH:mm:ssZ', session.userData.identity.timezone)
+  }
+  if (date) {
+    let utcResolvedTime = builder.EntityRecognizer.resolveTime([date]) || builder.EntityRecognizer.recognizeTime(date.entity).resolution.start
+    if (utcResolvedTime) {
+      let localResolvedTime = moment.tz(`${utcResolvedTime.toISOString().substring(0, 19)}`, 'YYYY-MM-DDTHH:mm:ss', session.userData.identity.timezone)
+      return localResolvedTime.set('hour', 12)
+    }
+  }
+  if (time) {
+    let utcResolvedTime = builder.EntityRecognizer.resolveTime([time]) || builder.EntityRecognizer.recognizeTime(time.entity).resolution.start
+    if (utcResolvedTime) {
+      return moment.tz(`${utcResolvedTime.toISOString().substring(0, 19)}`, 'YYYY-MM-DDTHH:mm:ss', session.userData.identity.timezone)
+    }
+  }
+
+  return undefined
 }
 
 module.exports = {

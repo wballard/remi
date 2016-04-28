@@ -38,7 +38,7 @@ module.exports = function (bot, db) {
         match = builder.EntityRecognizer.findBestMatch(users.map((user) => user.mention_name || ''), forWho.entity)
         || builder.EntityRecognizer.findBestMatch(users.map((user) => user.name), forWho.entity)
         if (!match) {
-          session.send(`Sorry, I can't find ${forWho.entity}`).endDialog()
+          session.endDialog(`Sorry, I can't find ${forWho.entity}`)
         } else {
           session.sessionState.reminder.who = users[match.index]
           if (Object.is(forWho.entity.toLowerCase(), match.entity.toLowerCase())) {
@@ -59,7 +59,7 @@ module.exports = function (bot, db) {
       if (response.response) {
         next()
       } else {
-        session.send('Sorry about that, try again for me.').endDialog()
+        session.endDialog('Sorry about that, try again for me.')
       }
     }
     ,
@@ -83,7 +83,7 @@ module.exports = function (bot, db) {
       } else if (when) {
         next()
       } else {
-        session.send('Sorry, I have no idea when that is. Tell me when again.').endDialog()
+        session.endDialog('Sorry, I have no idea when that is. Tell me when again.')
       }
     }
     ,
@@ -100,8 +100,8 @@ module.exports = function (bot, db) {
           // stuff it in the user data, and our database
           debug('schedule for', JSON.stringify(profile))
           return db.insertReminder(
-            session.sessionState.reminder.who.jid.bare().toString(),
-            session.userData.identity.jid.bare().toString(),
+            session.sessionState.reminder.who.jid,
+            session.userData.identity.jid,
             session.sessionState.reminder.what,
             session.sessionState.reminder.when.unix())
         })
@@ -109,9 +109,8 @@ module.exports = function (bot, db) {
         .then(() => bot.setUserData(session.userData.identity.jid, session.userData))
         .then(() => {
           let message = `Got it. I'll remind ${who} to ${what} on ${when.calendar()} ${when.zoneAbbr()} `
-          session.send(message)
+          session.endDialog(message)
         })
-        .then(() => session.endDialog())
     }
   ]
 }
