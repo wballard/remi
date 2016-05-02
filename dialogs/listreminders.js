@@ -26,9 +26,6 @@ module.exports = function (bot, db) {
             session.send(message)
           })
         })
-        .finally(() => {
-          session.endDialog()
-        })
     }
   ]
 }
