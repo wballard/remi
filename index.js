@@ -26,7 +26,7 @@ let bot = new HipchatBot({
   conference_host: process.env.JABBER_MUC_HOST
 })
 
-//in group chat, require explict address by @name
+// in group chat, require explict address by @name
 bot.groupFilter = (session, stanza, callback) => {
   callback(null, stanza.text.toLowerCase().indexOf(bot.profile.NICKNAME.toLowerCase()) >= 0)
 }
@@ -50,6 +50,19 @@ bot.add('/ListReminders', listreminders(bot, db))
 // nuke a reminder
 dialog.on('DeleteReminder', '/DeleteReminder')
 bot.add('/DeleteReminder', deletereminder(bot, db))
+
+// make good old Remi friendly
+dialog.on('SayingHello', '/SayingHello')
+bot.add('/SayingHello', [
+  (session, args, next) => {
+    bot.fullProfile(session.userData.identity.jid)
+      .then((profile) => {
+        debug('talking to ', JSON.stringify(profile))
+        session.endDialog(`Hi there ${profile.name}`)
+      }
+    )
+  }
+])
 
 // instructions when we have on idea what to do
 dialog.onDefault(builder.DialogAction.send(instructions))

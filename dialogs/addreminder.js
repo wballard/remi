@@ -78,9 +78,10 @@ module.exports = function (bot, db) {
     // time in hand, parse and normalize it
     (session, when, next) => {
       if (when.response) {
-        session.sessionState.reminder.when = thoroughWhen(session, [when])
+        session.sessionState.reminder.when = thoroughWhen(session, [when.response])
         next()
       } else if (when) {
+        session.sessionState.reminder.when = when
         next()
       } else {
         session.endDialog('Sorry, I have no idea when that is. Tell me when again.')

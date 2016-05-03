@@ -16,7 +16,7 @@ module.exports = function (bot, db) {
         .then((reminders) => {
           if (!reminders.length) {
             let message = "You don't have any remaining reminders."
-            session.send(message)
+            session.endDialog(message)
           }
           reminders.forEach((reminder, i) => {
             let reminderFrom = bot.directory[reminder.fromwho]
@@ -24,6 +24,7 @@ module.exports = function (bot, db) {
             when.tz(session.userData.identity.timezone)
             let message = `${i + 1}. Reminder from @${reminderFrom.mention_name} to ${reminder.what} on ${when.calendar()} ${when.zoneAbbr()}`
             session.send(message)
+            session.endDialog('')
           })
         })
     }

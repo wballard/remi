@@ -14,6 +14,9 @@ const debug = require('debug')('remi')
  * @returns - a date or nothing
  */
 function thoroughWhen (session, entities) {
+  let alterTimezone = (remiTime, suffix='Z') => {
+    return moment.tz(`${remiTime.toISOString().substring(0, 19)}${suffix}`, `YYYY-MM-DDTHH:mm:ss${suffix}`, session.userData.identity.timezone)
+  }
   // check first for a full phrase recognition
   let datetime = builder.EntityRecognizer.findEntity(entities, 'when::datetime')
   if (!datetime) {
@@ -24,12 +27,10 @@ function thoroughWhen (session, entities) {
 
   // this is effectively a kind of try/parse
   if (datetime) {
-    let remiTime = builder.EntityRecognizer.resolveTime([datetime]) || builder.EntityRecognizer.recognizeTime(datetime.entity).resolution.start
-    return moment.tz(`${remiTime.toISOString().substring(0, 19)}Z`, 'YYYY-MM-DDTHH:mm:ssZ', session.userData.identity.timezone)
+    return alterTimezone(builder.EntityRecognizer.resolveTime([datetime]) || builder.EntityRecognizer.recognizeTime(datetime.entity).resolution.start)
   }
   if (date && time) {
-    let remiTime = builder.EntityRecognizer.recognizeTime(`${date.entity} ${time.entity}`).resolution.start
-    return moment.tz(`${remiTime.toISOString().substring(0, 19)}Z`, 'YYYY-MM-DDTHH:mm:ssZ', session.userData.identity.timezone)
+    return alterTimezone(builder.EntityRecognizer.recognizeTime(`${date.entity} ${time.entity}`).resolution.start)
   }
   if (date) {
     let utcResolvedTime = builder.EntityRecognizer.resolveTime([date]) || builder.EntityRecognizer.recognizeTime(date.entity).resolution.start
@@ -41,8 +42,12 @@ function thoroughWhen (session, entities) {
   if (time) {
     let utcResolvedTime = builder.EntityRecognizer.resolveTime([time]) || builder.EntityRecognizer.recognizeTime(time.entity).resolution.start
     if (utcResolvedTime) {
-      return moment.tz(`${utcResolvedTime.toISOString().substring(0, 19)}`, 'YYYY-MM-DDTHH:mm:ss', session.userData.identity.timezone)
+      return alterTimezone(utcResolvedTime, '')
     }
+  }
+  //the ultra backup case in case we totally missed it
+  if (entities.length == 1) {
+    return alterTimezone(builder.EntityRecognizer.recognizeTime(entities[0].entity).resolution.start)
   }
 
   return undefined
