@@ -42,17 +42,17 @@ function thoroughWhen (session, entities) {
     }
   }
   if (time) {
-    let entity = builder.EntityRecognizer.recognizeTime(time.entity)
-    let utcResolvedTime = entity.resolution.start
-    if (utcResolvedTime) {
-      return alterTimezone(utcResolvedTime, '')
-    }
-    if (entity.resolution.time) {
+    if (time.resolution.time) {
       try {
         return alterTimezone(moment(entity.resolution.time, 'THH').toDate(), '')
       } catch (e) {
         console.error(e)
       }
+    }
+    let entity = builder.EntityRecognizer.recognizeTime(time.entity)
+    let utcResolvedTime = entity.resolution.start
+    if (utcResolvedTime) {
+      return alterTimezone(utcResolvedTime, '')
     }
   }
   // the ultra backup case in case we totally missed it
