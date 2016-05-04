@@ -14,6 +14,14 @@ const deletereminder = require('./dialogs/deletereminder')
 const changewhen = require('./dialogs/changewhen')
 const instructions = require('./dialogs/instructions')
 
+// express to get started on starphleet
+const express = require('express')
+const app = express()
+
+app.get('/', function (req, res) {
+  res.send('Remi Lives!')
+})
+
 // the database behind the app
 let db = new Database(process.env.DATABASE)
 
@@ -59,7 +67,7 @@ bot.add('/SayingHello', [
       .then((profile) => {
         debug('talking to ', JSON.stringify(profile))
         session.endDialog(`Hi there ${profile.name}`)
-        next()  
+        next()
       }
     )
   }
@@ -74,6 +82,9 @@ dialog.onDefault(builder.DialogAction.send(instructions))
 db.open()
   // bot gets connected and listens to the hipchat server
   .then(bot.listen.bind(bot))
+  .then(() => {
+    app.listen(process.env.PORT)
+  })
   // timer loop to get ready reminders, this chains past the promise to avoid double sends
   .then(() => {
     remind(bot, db)
