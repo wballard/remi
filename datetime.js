@@ -15,7 +15,7 @@ const debug = require('debug')('remi')
  */
 function thoroughWhen (session, entities) {
   debug('processing dates', JSON.stringify(entities))
-  let alterTimezone = (remiTime, suffix='Z') => {
+  let alterTimezone = (remiTime, suffix = 'Z') => {
     debug('date looks like this in UTC', remiTime)
     return moment.tz(`${remiTime.toISOString().substring(0, 19)}${suffix}`, `YYYY-MM-DDTHH:mm:ss${suffix}`, session.userData.identity.timezone)
   }
@@ -37,7 +37,7 @@ function thoroughWhen (session, entities) {
     let utcResolvedTime = builder.EntityRecognizer.recognizeTime(date.entity).resolution.start
     if (utcResolvedTime) {
       let localResolvedTime = alterTimezone(utcResolvedTime, '')
-      //when it is just a day, set it to local noon
+      // when it is just a day, set it to local noon
       return localResolvedTime.set('hour', 12)
     }
   }
@@ -47,12 +47,13 @@ function thoroughWhen (session, entities) {
       return alterTimezone(utcResolvedTime, '')
     }
   }
-  //the ultra backup case in case we totally missed it
-  if (entities.length == 1) {
-    return alterTimezone(builder.EntityRecognizer.recognizeTime(entities[0].entity).resolution.start)
+  // the ultra backup case in case we totally missed it
+  let utcResolvedTime = builder.EntityRecognizer.resolveTime(entities)
+  if (utcResolvedTime) {
+    return alterTimezone(utcResolvedTime, '')
+  } else {
+    return undefined
   }
-
-  return undefined
 }
 
 module.exports = {
