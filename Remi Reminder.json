@@ -1575,7 +1575,7 @@
     },
     {
       "text": "hi remi",
-      "intent": "None",
+      "intent": "SayingHello",
       "entities": []
     },
     {
@@ -2829,6 +2829,153 @@
       "text": "@remi",
       "intent": "SayingHello",
       "entities": []
+    },
+    {
+      "text": "remind me to figure out this double posting",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "remind me to look at jack's pr today at 11am",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 9,
+          "endPos": 11
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "remind me to look at jack's pr at 11am",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 10,
+          "endPos": 10
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "remind me to deploy jack's pr tomorrow at 3:30pm",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 8,
+          "endPos": 12
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "remind me to deploy jack's pr tomorrow at 3:30",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 8,
+          "endPos": 12
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "remind me to look at jack's pr at 11",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 10,
+          "endPos": 10
+        },
+        {
+          "entity": "user",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "activity",
+          "startPos": 3,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "remind @davidwright to coordinate with jim on monday may 9 regarding schema changes",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 8,
+          "endPos": 10
+        },
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 6
+        },
+        {
+          "entity": "activity",
+          "startPos": 11,
+          "endPos": 13
+        }
+      ]
     }
   ]
 }
