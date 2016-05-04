@@ -28,10 +28,10 @@ function thoroughWhen (session, entities) {
 
   // this is effectively a kind of try/parse
   if (datetime) {
-    return alterTimezone(builder.EntityRecognizer.recognizeTime(datetime.entity).resolution.start)
+    return alterTimezone(builder.EntityRecognizer.recognizeTime(datetime.entity).resolution.start, '')
   }
   if (date && time) {
-    return alterTimezone(builder.EntityRecognizer.recognizeTime(`${date.entity} ${time.entity}`).resolution.start)
+    return alterTimezone(builder.EntityRecognizer.recognizeTime(`${date.entity} ${time.entity}`).resolution.start, '')
   }
   if (date) {
     let utcResolvedTime = builder.EntityRecognizer.recognizeTime(date.entity).resolution.start
