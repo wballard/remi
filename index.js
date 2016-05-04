@@ -1,6 +1,6 @@
 'use strict'
 
-require('dotenv').config()
+require('dotenv').config({silent: true})
 const HipchatBot = require('botbuilder-hipchat')
 const builder = require('botbuilder')
 const _ = require('lodash')
