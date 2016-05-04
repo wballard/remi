@@ -27,22 +27,22 @@ function thoroughWhen (session, entities) {
 
   // this is effectively a kind of try/parse
   if (datetime) {
-    return alterTimezone(builder.EntityRecognizer.resolveTime([datetime]) || builder.EntityRecognizer.recognizeTime(datetime.entity).resolution.start)
+    return alterTimezone(builder.EntityRecognizer.recognizeTime(datetime.entity).resolution.start)
   }
   if (date && time) {
     return alterTimezone(builder.EntityRecognizer.recognizeTime(`${date.entity} ${time.entity}`).resolution.start)
   }
   if (date) {
-    let utcResolvedTime = builder.EntityRecognizer.resolveTime([date]) || builder.EntityRecognizer.recognizeTime(date.entity).resolution.start
+    let utcResolvedTime = builder.EntityRecognizer.recognizeTime(date.entity).resolution.start
     if (utcResolvedTime) {
-      let localResolvedTime = moment.tz(`${utcResolvedTime.toISOString().substring(0, 19)}`, 'YYYY-MM-DDTHH:mm:ss', session.userData.identity.timezone)
+      let localResolvedTime = alterTimezone(utcResolvedTime, '')
       return localResolvedTime.set('hour', 12)
     }
   }
   if (time) {
-    let utcResolvedTime = builder.EntityRecognizer.resolveTime([time]) || builder.EntityRecognizer.recognizeTime(time.entity).resolution.start
+    let utcResolvedTime = builder.EntityRecognizer.recognizeTime(time.entity).resolution.start
     if (utcResolvedTime) {
-      return alterTimezone(utcResolvedTime, '')
+      return alterTimezone(utcResolvedTime)
     }
   }
   //the ultra backup case in case we totally missed it

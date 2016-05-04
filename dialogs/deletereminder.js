@@ -22,6 +22,10 @@ module.exports = function (bot, db) {
             session.beginDialog('/ListReminders')
           }
         })
+        .then( () =>{
+          session.endDialog()
+          next() 
+        })
     }
   ]
 }

@@ -59,6 +59,7 @@ bot.add('/SayingHello', [
       .then((profile) => {
         debug('talking to ', JSON.stringify(profile))
         session.endDialog(`Hi there ${profile.name}`)
+        next()  
       }
     )
   }

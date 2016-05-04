@@ -63,6 +63,7 @@ module.exports = function (bot, db) {
           let message = `I'll change that to ${when.calendar()}`
           debug(message)
           session.endDialog(message)
+          next()
         })
     }
   ]

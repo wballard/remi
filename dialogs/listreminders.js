@@ -16,16 +16,22 @@ module.exports = function (bot, db) {
         .then((reminders) => {
           if (!reminders.length) {
             let message = "You don't have any remaining reminders."
-            session.endDialog(message)
-          }
-          reminders.forEach((reminder, i) => {
-            let reminderFrom = bot.directory[reminder.fromwho]
-            let when = moment.unix(reminder.when)
-            when.tz(session.userData.identity.timezone)
-            let message = `${i + 1}. Reminder from @${reminderFrom.mention_name} to ${reminder.what} on ${when.calendar()} ${when.zoneAbbr()}`
             session.send(message)
-            session.endDialog('')
-          })
+          } else {
+            let message = ''
+            reminders.forEach((reminder, i) => {
+              let reminderFrom = bot.directory[reminder.fromwho]
+              let when = moment.unix(reminder.when)
+              when.tz(session.userData.identity.timezone)
+              message += `${i + 1}. Reminder from @${reminderFrom.mention_name} to ${reminder.what} on ${when.calendar()} ${when.zoneAbbr()}
+`
+            })
+            session.send(message)
+          }
+        })
+        .then(() =>{
+          session.endDialog()
+          next()
         })
     }
   ]

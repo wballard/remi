@@ -13,6 +13,10 @@
       "Children": []
     },
     {
+      "Name": "SayingHello",
+      "Children": []
+    },
+    {
       "Name": "None",
       "Children": []
     },
@@ -1966,7 +1970,7 @@
     },
     {
       "text": "yo",
-      "intent": "None",
+      "intent": "SayingHello",
       "entities": []
     },
     {
@@ -1976,7 +1980,7 @@
     },
     {
       "text": "hello",
-      "intent": "None",
+      "intent": "SayingHello",
       "entities": []
     },
     {
@@ -2434,7 +2438,7 @@
     },
     {
       "text": "hi",
-      "intent": "None",
+      "intent": "SayingHello",
       "entities": []
     },
     {
@@ -2733,6 +2737,98 @@
           "endPos": 3
         }
       ]
+    },
+    {
+      "text": "change 3 to tomorrow at 7am",
+      "intent": "ChangeWhen",
+      "entities": [
+        {
+          "entity": "when",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "remind @benjaminchang to call home",
+      "intent": "AddReminder",
+      "entities": [
+        {
+          "entity": "user",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "activity",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi there",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "nihao",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "sup",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "hodor",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "oi!",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "hi there remi",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "hello!",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "hello remi",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "remi hi",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "hi remi!",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "@remi hi",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "ni hao",
+      "intent": "SayingHello",
+      "entities": []
+    },
+    {
+      "text": "@remi",
+      "intent": "SayingHello",
+      "entities": []
     }
   ]
 }

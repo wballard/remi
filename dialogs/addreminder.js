@@ -57,7 +57,7 @@ module.exports = function (bot, db) {
     // do we really have a target person now?
     (session, response, next) => {
       if (response.response) {
-        next()
+        next({})
       } else {
         session.endDialog('Sorry about that, try again for me.')
       }
@@ -65,7 +65,7 @@ module.exports = function (bot, db) {
     ,
     // make sure we know when, or ask for it as it seems natural to not always
     // specify the time
-    (session, response, next) => {
+    (session, discard, next) => {
       let when = thoroughWhen(session, session.sessionState.reminder.fromLUIS.entities)
       if (when) {
         session.sessionState.reminder.when = when
@@ -90,7 +90,7 @@ module.exports = function (bot, db) {
     ,
     // echo is the new confirm! well more than that, put it in the database so it will be
     // be an actual active reminder
-    (session) => {
+    (session, discard, next) => {
       //just shortening below
       let who = `@${session.sessionState.reminder.who.mention_name}`
       let what = session.sessionState.reminder.what
@@ -111,6 +111,7 @@ module.exports = function (bot, db) {
         .then(() => {
           let message = `Got it. I'll remind ${who} to ${what} on ${when.calendar()} ${when.zoneAbbr()} `
           session.endDialog(message)
+          next()
         })
     }
   ]
