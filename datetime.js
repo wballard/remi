@@ -14,7 +14,9 @@ const debug = require('debug')('remi')
  * @returns - a date or nothing
  */
 function thoroughWhen (session, entities) {
+  debug('processing dates', JSON.stringify(entities))
   let alterTimezone = (remiTime, suffix='Z') => {
+    debug('date looks like this in UTC', remiTime)
     return moment.tz(`${remiTime.toISOString().substring(0, 19)}${suffix}`, `YYYY-MM-DDTHH:mm:ss${suffix}`, session.userData.identity.timezone)
   }
   // check first for a full phrase recognition
