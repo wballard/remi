@@ -21,9 +21,8 @@ function thoroughWhen (session, entities) {
   }
   // check first for a full phrase recognition
   let datetime = builder.EntityRecognizer.findEntity(entities, 'when::datetime')
-  if (!datetime) {
-    datetime = builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.datetime')
-  }
+  || builder.EntityRecognizer.findEntity(entities, 'when')
+  || builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.datetime')
   let date = builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.date')
   let time = builder.EntityRecognizer.findEntity(entities, 'builtin.datetime.time')
 
@@ -38,6 +37,7 @@ function thoroughWhen (session, entities) {
     let utcResolvedTime = builder.EntityRecognizer.recognizeTime(date.entity).resolution.start
     if (utcResolvedTime) {
       let localResolvedTime = alterTimezone(utcResolvedTime, '')
+      //when it is just a day, set it to local noon
       return localResolvedTime.set('hour', 12)
     }
   }
