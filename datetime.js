@@ -44,7 +44,7 @@ function thoroughWhen (session, entities) {
   if (time) {
     if (time.resolution.time) {
       try {
-        return alterTimezone(moment(entity.resolution.time, 'THH').toDate(), '')
+        return alterTimezone(moment(time.resolution.time, 'THH').toDate(), '')
       } catch (e) {
         console.error(e)
       }
