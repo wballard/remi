@@ -18,9 +18,7 @@ function remind (bot, db) {
         if (reminderFrom && reminderTo) {
           if (Object.is('online', reminderTo.presence) || Object.is('chat', reminderTo.presence)) {
             debug(`Reminding`, JSON.stringify(reminderTo))
-            bot.send(
-              reminderTo.jid,
-              `Reminder from @${reminderFrom.mention_name} to ${reminder.what}`)
+            bot.send(reminderTo.jid, `Reminder from @${reminderFrom.mention_name} to ${reminder.what}`, 'chat')
               .then(() => db.deleteReminder(reminder))
               .then(() => bot.getUserData(reminderTo.jid))
               .then((userData) => {
