@@ -44,7 +44,7 @@ function thoroughWhen (session, entities) {
   if (time) {
     let utcResolvedTime = builder.EntityRecognizer.recognizeTime(time.entity).resolution.start
     if (utcResolvedTime) {
-      return alterTimezone(utcResolvedTime)
+      return alterTimezone(utcResolvedTime, '')
     }
   }
   //the ultra backup case in case we totally missed it
